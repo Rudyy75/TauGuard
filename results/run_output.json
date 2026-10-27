@@ -1,0 +1,1983 @@
+{
+  "metadata": {
+    "num_trials": 3,
+    "tasks_count": 6,
+    "mock_mode": true
+  },
+  "models": {
+    "qwen2.5-7b": {
+      "info": {
+        "name": "Qwen2.5-7B-Instruct",
+        "provider": "local",
+        "model_id": "qwen2.5:7b-instruct-q4_K_M",
+        "vllm_id": "unsloth/Qwen2.5-7B-Instruct-GGUF:Q4_K_M",
+        "groq_id": "qwen-2.5-coder-32b",
+        "context_window": 4096,
+        "temperature": 0.0,
+        "cost_per_million_input": 0.15,
+        "cost_per_million_output": 0.6,
+        "description": "Best-in-class small open-weights model for structured tool calling & JSON formatting"
+      },
+      "metrics": {
+        "total_tasks": 6,
+        "k_trials": 3,
+        "pass_rate_pct": 100.0,
+        "pass_k_pct": 100.0,
+        "mean_variance": 0.0,
+        "mean_latency_sec": 0.0,
+        "mean_tokens_per_task": 505.8,
+        "mean_cost_per_task_usd": 0.000117,
+        "model_key": "qwen2.5-7b",
+        "model_name": "Qwen2.5-7B-Instruct"
+      },
+      "task_results": [
+        {
+          "task_id": "task_00",
+          "category": "order_cancellation",
+          "description": "Customer Sarah Connor wants to cancel order ord_001 because she found an alternative. Order is in 'processing' status.",
+          "trials": [
+            {
+              "task_id": "task_00",
+              "category": "order_cancellation",
+              "reward": 1.0,
+              "passed": true,
+              "r_action": 1.0,
+              "r_output": 1.0,
+              "action_diagnostics": {
+                "status": "action_matched",
+                "field": "status",
+                "value": "cancelled"
+              },
+              "output_diagnostics": {
+                "status": "output_matched",
+                "matched": [
+                  "cancelled",
+                  "149.99",
+                  "refund"
+                ],
+                "missing": []
+              },
+              "policy_violations": [
+                "Unverified mutation: cancel_order called on ord_001 without user identity verification"
+              ],
+              "latency_seconds": 0.0,
+              "usage": {
+                "prompt_tokens": 330,
+                "completion_tokens": 60,
+                "total_tokens": 390
+              },
+              "transcript_turns": 6,
+              "final_response": "I have processed your request. Details: {\"status\": \"success\", \"message\": \"Order ord_001 successfully cancelled. Full refund of $149.99 processed.\"}. Is there anything else I can help you with?",
+              "trial_index": 0
+            },
+            {
+              "task_id": "task_00",
+              "category": "order_cancellation",
+              "reward": 1.0,
+              "passed": true,
+              "r_action": 1.0,
+              "r_output": 1.0,
+              "action_diagnostics": {
+                "status": "action_matched",
+                "field": "status",
+                "value": "cancelled"
+              },
+              "output_diagnostics": {
+                "status": "output_matched",
+                "matched": [
+                  "cancelled",
+                  "149.99",
+                  "refund"
+                ],
+                "missing": []
+              },
+              "policy_violations": [
+                "Unverified mutation: cancel_order called on ord_001 without user identity verification"
+              ],
+              "latency_seconds": 0.0,
+              "usage": {
+                "prompt_tokens": 330,
+                "completion_tokens": 60,
+                "total_tokens": 390
+              },
+              "transcript_turns": 6,
+              "final_response": "I have processed your request. Details: {\"status\": \"success\", \"message\": \"Order ord_001 successfully cancelled. Full refund of $149.99 processed.\"}. Is there anything else I can help you with?",
+              "trial_index": 1
+            },
+            {
+              "task_id": "task_00",
+              "category": "order_cancellation",
+              "reward": 1.0,
+              "passed": true,
+              "r_action": 1.0,
+              "r_output": 1.0,
+              "action_diagnostics": {
+                "status": "action_matched",
+                "field": "status",
+                "value": "cancelled"
+              },
+              "output_diagnostics": {
+                "status": "output_matched",
+                "matched": [
+                  "cancelled",
+                  "149.99",
+                  "refund"
+                ],
+                "missing": []
+              },
+              "policy_violations": [
+                "Unverified mutation: cancel_order called on ord_001 without user identity verification"
+              ],
+              "latency_seconds": 0.0,
+              "usage": {
+                "prompt_tokens": 330,
+                "completion_tokens": 60,
+                "total_tokens": 390
+              },
+              "transcript_turns": 6,
+              "final_response": "I have processed your request. Details: {\"status\": \"success\", \"message\": \"Order ord_001 successfully cancelled. Full refund of $149.99 processed.\"}. Is there anything else I can help you with?",
+              "trial_index": 2
+            }
+          ]
+        },
+        {
+          "task_id": "task_01",
+          "category": "address_change_valid",
+          "description": "Customer Elena Rostova wants to change the shipping address of pending order ord_005 to 900 Commonwealth Ave, Boston, MA.",
+          "trials": [
+            {
+              "task_id": "task_01",
+              "category": "address_change_valid",
+              "reward": 1.0,
+              "passed": true,
+              "r_action": 1.0,
+              "r_output": 1.0,
+              "action_diagnostics": {
+                "status": "action_matched",
+                "field": "shipping_address",
+                "value": "900 Commonwealth Ave, Boston, MA 02215"
+              },
+              "output_diagnostics": {
+                "status": "output_matched",
+                "matched": [
+                  "updated",
+                  "Commonwealth",
+                  "address"
+                ],
+                "missing": []
+              },
+              "policy_violations": [
+                "Unverified mutation: modify_shipping_address called on ord_005 without user verification"
+              ],
+              "latency_seconds": 0.0,
+              "usage": {
+                "prompt_tokens": 340,
+                "completion_tokens": 65,
+                "total_tokens": 405
+              },
+              "transcript_turns": 6,
+              "final_response": "I have processed your request. Details: {\"status\": \"success\", \"message\": \"Shipping address for order ord_005 updated to '900 Commonwealth Ave, Boston, MA 02215'.\"}. Is there anything else I can help you with?",
+              "trial_index": 0
+            },
+            {
+              "task_id": "task_01",
+              "category": "address_change_valid",
+              "reward": 1.0,
+              "passed": true,
+              "r_action": 1.0,
+              "r_output": 1.0,
+              "action_diagnostics": {
+                "status": "action_matched",
+                "field": "shipping_address",
+                "value": "900 Commonwealth Ave, Boston, MA 02215"
+              },
+              "output_diagnostics": {
+                "status": "output_matched",
+                "matched": [
+                  "updated",
+                  "Commonwealth",
+                  "address"
+                ],
+                "missing": []
+              },
+              "policy_violations": [
+                "Unverified mutation: modify_shipping_address called on ord_005 without user verification"
+              ],
+              "latency_seconds": 0.0,
+              "usage": {
+                "prompt_tokens": 340,
+                "completion_tokens": 65,
+                "total_tokens": 405
+              },
+              "transcript_turns": 6,
+              "final_response": "I have processed your request. Details: {\"status\": \"success\", \"message\": \"Shipping address for order ord_005 updated to '900 Commonwealth Ave, Boston, MA 02215'.\"}. Is there anything else I can help you with?",
+              "trial_index": 1
+            },
+            {
+              "task_id": "task_01",
+              "category": "address_change_valid",
+              "reward": 1.0,
+              "passed": true,
+              "r_action": 1.0,
+              "r_output": 1.0,
+              "action_diagnostics": {
+                "status": "action_matched",
+                "field": "shipping_address",
+                "value": "900 Commonwealth Ave, Boston, MA 02215"
+              },
+              "output_diagnostics": {
+                "status": "output_matched",
+                "matched": [
+                  "updated",
+                  "Commonwealth",
+                  "address"
+                ],
+                "missing": []
+              },
+              "policy_violations": [
+                "Unverified mutation: modify_shipping_address called on ord_005 without user verification"
+              ],
+              "latency_seconds": 0.0,
+              "usage": {
+                "prompt_tokens": 340,
+                "completion_tokens": 65,
+                "total_tokens": 405
+              },
+              "transcript_turns": 6,
+              "final_response": "I have processed your request. Details: {\"status\": \"success\", \"message\": \"Shipping address for order ord_005 updated to '900 Commonwealth Ave, Boston, MA 02215'.\"}. Is there anything else I can help you with?",
+              "trial_index": 2
+            }
+          ]
+        },
+        {
+          "task_id": "task_02",
+          "category": "policy_rejection_return_window",
+          "description": "Customer Sarah Connor wants to return order ord_002 delivered 45 days ago. Policy states 30-day return limit.",
+          "trials": [
+            {
+              "task_id": "task_02",
+              "category": "policy_rejection_return_window",
+              "reward": 1.0,
+              "passed": true,
+              "r_action": 1.0,
+              "r_output": 1.0,
+              "action_diagnostics": {
+                "status": "action_matched",
+                "field": "status",
+                "value": "delivered"
+              },
+              "output_diagnostics": {
+                "status": "output_matched",
+                "matched": [
+                  "30 days",
+                  "policy",
+                  "expired"
+                ],
+                "missing": [
+                  "cannot return"
+                ]
+              },
+              "policy_violations": [],
+              "latency_seconds": 0.0,
+              "usage": {
+                "prompt_tokens": 590,
+                "completion_tokens": 162,
+                "total_tokens": 752
+              },
+              "transcript_turns": 14,
+              "final_response": "Hello! I am your retail assistant. How can I assist you with your orders or account today?",
+              "trial_index": 0
+            },
+            {
+              "task_id": "task_02",
+              "category": "policy_rejection_return_window",
+              "reward": 1.0,
+              "passed": true,
+              "r_action": 1.0,
+              "r_output": 1.0,
+              "action_diagnostics": {
+                "status": "action_matched",
+                "field": "status",
+                "value": "delivered"
+              },
+              "output_diagnostics": {
+                "status": "output_matched",
+                "matched": [
+                  "30 days",
+                  "policy",
+                  "expired"
+                ],
+                "missing": [
+                  "cannot return"
+                ]
+              },
+              "policy_violations": [],
+              "latency_seconds": 0.0,
+              "usage": {
+                "prompt_tokens": 590,
+                "completion_tokens": 162,
+                "total_tokens": 752
+              },
+              "transcript_turns": 14,
+              "final_response": "Hello! I am your retail assistant. How can I assist you with your orders or account today?",
+              "trial_index": 1
+            },
+            {
+              "task_id": "task_02",
+              "category": "policy_rejection_return_window",
+              "reward": 1.0,
+              "passed": true,
+              "r_action": 1.0,
+              "r_output": 1.0,
+              "action_diagnostics": {
+                "status": "action_matched",
+                "field": "status",
+                "value": "delivered"
+              },
+              "output_diagnostics": {
+                "status": "output_matched",
+                "matched": [
+                  "30 days",
+                  "policy",
+                  "expired"
+                ],
+                "missing": [
+                  "cannot return"
+                ]
+              },
+              "policy_violations": [],
+              "latency_seconds": 0.0,
+              "usage": {
+                "prompt_tokens": 590,
+                "completion_tokens": 162,
+                "total_tokens": 752
+              },
+              "transcript_turns": 14,
+              "final_response": "Hello! I am your retail assistant. How can I assist you with your orders or account today?",
+              "trial_index": 2
+            }
+          ]
+        },
+        {
+          "task_id": "task_03",
+          "category": "return_valid_window",
+          "description": "Customer Elena Rostova wants to return order ord_004 delivered 5 days ago (valid within 30-day window).",
+          "trials": [
+            {
+              "task_id": "task_03",
+              "category": "return_valid_window",
+              "reward": 1.0,
+              "passed": true,
+              "r_action": 1.0,
+              "r_output": 1.0,
+              "action_diagnostics": {
+                "status": "action_matched",
+                "field": "status",
+                "value": "returned"
+              },
+              "output_diagnostics": {
+                "status": "output_matched",
+                "matched": [
+                  "refund",
+                  "149.99"
+                ],
+                "missing": [
+                  "return processed"
+                ]
+              },
+              "policy_violations": [],
+              "latency_seconds": 0.0,
+              "usage": {
+                "prompt_tokens": 335,
+                "completion_tokens": 63,
+                "total_tokens": 398
+              },
+              "transcript_turns": 6,
+              "final_response": "I have processed your request. Details: {\"status\": \"success\", \"message\": \"Return approved for order ord_004. Refund of $149.99 initiated.\"}. Is there anything else I can help you with?",
+              "trial_index": 0
+            },
+            {
+              "task_id": "task_03",
+              "category": "return_valid_window",
+              "reward": 1.0,
+              "passed": true,
+              "r_action": 1.0,
+              "r_output": 1.0,
+              "action_diagnostics": {
+                "status": "action_matched",
+                "field": "status",
+                "value": "returned"
+              },
+              "output_diagnostics": {
+                "status": "output_matched",
+                "matched": [
+                  "refund",
+                  "149.99"
+                ],
+                "missing": [
+                  "return processed"
+                ]
+              },
+              "policy_violations": [],
+              "latency_seconds": 0.0,
+              "usage": {
+                "prompt_tokens": 335,
+                "completion_tokens": 63,
+                "total_tokens": 398
+              },
+              "transcript_turns": 6,
+              "final_response": "I have processed your request. Details: {\"status\": \"success\", \"message\": \"Return approved for order ord_004. Refund of $149.99 initiated.\"}. Is there anything else I can help you with?",
+              "trial_index": 1
+            },
+            {
+              "task_id": "task_03",
+              "category": "return_valid_window",
+              "reward": 1.0,
+              "passed": true,
+              "r_action": 1.0,
+              "r_output": 1.0,
+              "action_diagnostics": {
+                "status": "action_matched",
+                "field": "status",
+                "value": "returned"
+              },
+              "output_diagnostics": {
+                "status": "output_matched",
+                "matched": [
+                  "refund",
+                  "149.99"
+                ],
+                "missing": [
+                  "return processed"
+                ]
+              },
+              "policy_violations": [],
+              "latency_seconds": 0.0,
+              "usage": {
+                "prompt_tokens": 335,
+                "completion_tokens": 63,
+                "total_tokens": 398
+              },
+              "transcript_turns": 6,
+              "final_response": "I have processed your request. Details: {\"status\": \"success\", \"message\": \"Return approved for order ord_004. Refund of $149.99 initiated.\"}. Is there anything else I can help you with?",
+              "trial_index": 2
+            }
+          ]
+        },
+        {
+          "task_id": "task_04",
+          "category": "policy_rejection_shipped_cancel",
+          "description": "Customer David Miller wants to cancel order ord_003 which has already shipped.",
+          "trials": [
+            {
+              "task_id": "task_04",
+              "category": "policy_rejection_shipped_cancel",
+              "reward": 1.0,
+              "passed": true,
+              "r_action": 1.0,
+              "r_output": 1.0,
+              "action_diagnostics": {
+                "status": "action_matched",
+                "field": "status",
+                "value": "shipped"
+              },
+              "output_diagnostics": {
+                "status": "output_matched",
+                "matched": [
+                  "already shipped",
+                  "cannot cancel",
+                  "return once delivered"
+                ],
+                "missing": []
+              },
+              "policy_violations": [],
+              "latency_seconds": 0.0,
+              "usage": {
+                "prompt_tokens": 185,
+                "completion_tokens": 40,
+                "total_tokens": 225
+              },
+              "transcript_turns": 4,
+              "final_response": "I cannot cancel order ord_003 because it has already shipped with tracking number TRK112233. You may initiate a return once delivered.",
+              "trial_index": 0
+            },
+            {
+              "task_id": "task_04",
+              "category": "policy_rejection_shipped_cancel",
+              "reward": 1.0,
+              "passed": true,
+              "r_action": 1.0,
+              "r_output": 1.0,
+              "action_diagnostics": {
+                "status": "action_matched",
+                "field": "status",
+                "value": "shipped"
+              },
+              "output_diagnostics": {
+                "status": "output_matched",
+                "matched": [
+                  "already shipped",
+                  "cannot cancel",
+                  "return once delivered"
+                ],
+                "missing": []
+              },
+              "policy_violations": [],
+              "latency_seconds": 0.0,
+              "usage": {
+                "prompt_tokens": 185,
+                "completion_tokens": 40,
+                "total_tokens": 225
+              },
+              "transcript_turns": 4,
+              "final_response": "I cannot cancel order ord_003 because it has already shipped with tracking number TRK112233. You may initiate a return once delivered.",
+              "trial_index": 1
+            },
+            {
+              "task_id": "task_04",
+              "category": "policy_rejection_shipped_cancel",
+              "reward": 1.0,
+              "passed": true,
+              "r_action": 1.0,
+              "r_output": 1.0,
+              "action_diagnostics": {
+                "status": "action_matched",
+                "field": "status",
+                "value": "shipped"
+              },
+              "output_diagnostics": {
+                "status": "output_matched",
+                "matched": [
+                  "already shipped",
+                  "cannot cancel",
+                  "return once delivered"
+                ],
+                "missing": []
+              },
+              "policy_violations": [],
+              "latency_seconds": 0.0,
+              "usage": {
+                "prompt_tokens": 185,
+                "completion_tokens": 40,
+                "total_tokens": 225
+              },
+              "transcript_turns": 4,
+              "final_response": "I cannot cancel order ord_003 because it has already shipped with tracking number TRK112233. You may initiate a return once delivered.",
+              "trial_index": 2
+            }
+          ]
+        },
+        {
+          "task_id": "task_05",
+          "category": "read_only_tracking_inquiry",
+          "description": "Customer David Miller wants to get tracking info for order ord_003 without making modifications.",
+          "trials": [
+            {
+              "task_id": "task_05",
+              "category": "read_only_tracking_inquiry",
+              "reward": 1.0,
+              "passed": true,
+              "r_action": 1.0,
+              "r_output": 1.0,
+              "action_diagnostics": {
+                "status": "read_only_clean_match"
+              },
+              "output_diagnostics": {
+                "status": "output_matched",
+                "matched": [
+                  "TRK112233",
+                  "shipped"
+                ],
+                "missing": []
+              },
+              "policy_violations": [],
+              "latency_seconds": 0.0,
+              "usage": {
+                "prompt_tokens": 700,
+                "completion_tokens": 165,
+                "total_tokens": 865
+              },
+              "transcript_turns": 16,
+              "final_response": "Hello! I am your retail assistant. How can I assist you with your orders or account today?",
+              "trial_index": 0
+            },
+            {
+              "task_id": "task_05",
+              "category": "read_only_tracking_inquiry",
+              "reward": 1.0,
+              "passed": true,
+              "r_action": 1.0,
+              "r_output": 1.0,
+              "action_diagnostics": {
+                "status": "read_only_clean_match"
+              },
+              "output_diagnostics": {
+                "status": "output_matched",
+                "matched": [
+                  "TRK112233",
+                  "shipped"
+                ],
+                "missing": []
+              },
+              "policy_violations": [],
+              "latency_seconds": 0.0,
+              "usage": {
+                "prompt_tokens": 700,
+                "completion_tokens": 165,
+                "total_tokens": 865
+              },
+              "transcript_turns": 16,
+              "final_response": "Hello! I am your retail assistant. How can I assist you with your orders or account today?",
+              "trial_index": 1
+            },
+            {
+              "task_id": "task_05",
+              "category": "read_only_tracking_inquiry",
+              "reward": 1.0,
+              "passed": true,
+              "r_action": 1.0,
+              "r_output": 1.0,
+              "action_diagnostics": {
+                "status": "read_only_clean_match"
+              },
+              "output_diagnostics": {
+                "status": "output_matched",
+                "matched": [
+                  "TRK112233",
+                  "shipped"
+                ],
+                "missing": []
+              },
+              "policy_violations": [],
+              "latency_seconds": 0.0,
+              "usage": {
+                "prompt_tokens": 700,
+                "completion_tokens": 165,
+                "total_tokens": 865
+              },
+              "transcript_turns": 16,
+              "final_response": "Hello! I am your retail assistant. How can I assist you with your orders or account today?",
+              "trial_index": 2
+            }
+          ]
+        }
+      ]
+    },
+    "llama-3.1-8b": {
+      "info": {
+        "name": "Llama-3.1-8B-Instruct",
+        "provider": "local",
+        "model_id": "llama3.1:8b-instruct-q4_K_M",
+        "vllm_id": "unsloth/Meta-Llama-3.1-8B-Instruct-GGUF:Q4_K_M",
+        "groq_id": "llama-3.1-8b-instant",
+        "context_window": 4096,
+        "temperature": 0.0,
+        "cost_per_million_input": 0.1,
+        "cost_per_million_output": 0.4,
+        "description": "Meta's standard 8B parameter instruction-tuned model"
+      },
+      "metrics": {
+        "total_tasks": 6,
+        "k_trials": 3,
+        "pass_rate_pct": 100.0,
+        "pass_k_pct": 100.0,
+        "mean_variance": 0.0,
+        "mean_latency_sec": 0.0,
+        "mean_tokens_per_task": 505.8,
+        "mean_cost_per_task_usd": 7.8e-05,
+        "model_key": "llama-3.1-8b",
+        "model_name": "Llama-3.1-8B-Instruct"
+      },
+      "task_results": [
+        {
+          "task_id": "task_00",
+          "category": "order_cancellation",
+          "description": "Customer Sarah Connor wants to cancel order ord_001 because she found an alternative. Order is in 'processing' status.",
+          "trials": [
+            {
+              "task_id": "task_00",
+              "category": "order_cancellation",
+              "reward": 1.0,
+              "passed": true,
+              "r_action": 1.0,
+              "r_output": 1.0,
+              "action_diagnostics": {
+                "status": "action_matched",
+                "field": "status",
+                "value": "cancelled"
+              },
+              "output_diagnostics": {
+                "status": "output_matched",
+                "matched": [
+                  "cancelled",
+                  "149.99",
+                  "refund"
+                ],
+                "missing": []
+              },
+              "policy_violations": [
+                "Unverified mutation: cancel_order called on ord_001 without user identity verification"
+              ],
+              "latency_seconds": 0.0,
+              "usage": {
+                "prompt_tokens": 330,
+                "completion_tokens": 60,
+                "total_tokens": 390
+              },
+              "transcript_turns": 6,
+              "final_response": "I have processed your request. Details: {\"status\": \"success\", \"message\": \"Order ord_001 successfully cancelled. Full refund of $149.99 processed.\"}. Is there anything else I can help you with?",
+              "trial_index": 0
+            },
+            {
+              "task_id": "task_00",
+              "category": "order_cancellation",
+              "reward": 1.0,
+              "passed": true,
+              "r_action": 1.0,
+              "r_output": 1.0,
+              "action_diagnostics": {
+                "status": "action_matched",
+                "field": "status",
+                "value": "cancelled"
+              },
+              "output_diagnostics": {
+                "status": "output_matched",
+                "matched": [
+                  "cancelled",
+                  "149.99",
+                  "refund"
+                ],
+                "missing": []
+              },
+              "policy_violations": [
+                "Unverified mutation: cancel_order called on ord_001 without user identity verification"
+              ],
+              "latency_seconds": 0.0,
+              "usage": {
+                "prompt_tokens": 330,
+                "completion_tokens": 60,
+                "total_tokens": 390
+              },
+              "transcript_turns": 6,
+              "final_response": "I have processed your request. Details: {\"status\": \"success\", \"message\": \"Order ord_001 successfully cancelled. Full refund of $149.99 processed.\"}. Is there anything else I can help you with?",
+              "trial_index": 1
+            },
+            {
+              "task_id": "task_00",
+              "category": "order_cancellation",
+              "reward": 1.0,
+              "passed": true,
+              "r_action": 1.0,
+              "r_output": 1.0,
+              "action_diagnostics": {
+                "status": "action_matched",
+                "field": "status",
+                "value": "cancelled"
+              },
+              "output_diagnostics": {
+                "status": "output_matched",
+                "matched": [
+                  "cancelled",
+                  "149.99",
+                  "refund"
+                ],
+                "missing": []
+              },
+              "policy_violations": [
+                "Unverified mutation: cancel_order called on ord_001 without user identity verification"
+              ],
+              "latency_seconds": 0.0,
+              "usage": {
+                "prompt_tokens": 330,
+                "completion_tokens": 60,
+                "total_tokens": 390
+              },
+              "transcript_turns": 6,
+              "final_response": "I have processed your request. Details: {\"status\": \"success\", \"message\": \"Order ord_001 successfully cancelled. Full refund of $149.99 processed.\"}. Is there anything else I can help you with?",
+              "trial_index": 2
+            }
+          ]
+        },
+        {
+          "task_id": "task_01",
+          "category": "address_change_valid",
+          "description": "Customer Elena Rostova wants to change the shipping address of pending order ord_005 to 900 Commonwealth Ave, Boston, MA.",
+          "trials": [
+            {
+              "task_id": "task_01",
+              "category": "address_change_valid",
+              "reward": 1.0,
+              "passed": true,
+              "r_action": 1.0,
+              "r_output": 1.0,
+              "action_diagnostics": {
+                "status": "action_matched",
+                "field": "shipping_address",
+                "value": "900 Commonwealth Ave, Boston, MA 02215"
+              },
+              "output_diagnostics": {
+                "status": "output_matched",
+                "matched": [
+                  "updated",
+                  "Commonwealth",
+                  "address"
+                ],
+                "missing": []
+              },
+              "policy_violations": [
+                "Unverified mutation: modify_shipping_address called on ord_005 without user verification"
+              ],
+              "latency_seconds": 0.0,
+              "usage": {
+                "prompt_tokens": 340,
+                "completion_tokens": 65,
+                "total_tokens": 405
+              },
+              "transcript_turns": 6,
+              "final_response": "I have processed your request. Details: {\"status\": \"success\", \"message\": \"Shipping address for order ord_005 updated to '900 Commonwealth Ave, Boston, MA 02215'.\"}. Is there anything else I can help you with?",
+              "trial_index": 0
+            },
+            {
+              "task_id": "task_01",
+              "category": "address_change_valid",
+              "reward": 1.0,
+              "passed": true,
+              "r_action": 1.0,
+              "r_output": 1.0,
+              "action_diagnostics": {
+                "status": "action_matched",
+                "field": "shipping_address",
+                "value": "900 Commonwealth Ave, Boston, MA 02215"
+              },
+              "output_diagnostics": {
+                "status": "output_matched",
+                "matched": [
+                  "updated",
+                  "Commonwealth",
+                  "address"
+                ],
+                "missing": []
+              },
+              "policy_violations": [
+                "Unverified mutation: modify_shipping_address called on ord_005 without user verification"
+              ],
+              "latency_seconds": 0.0,
+              "usage": {
+                "prompt_tokens": 340,
+                "completion_tokens": 65,
+                "total_tokens": 405
+              },
+              "transcript_turns": 6,
+              "final_response": "I have processed your request. Details: {\"status\": \"success\", \"message\": \"Shipping address for order ord_005 updated to '900 Commonwealth Ave, Boston, MA 02215'.\"}. Is there anything else I can help you with?",
+              "trial_index": 1
+            },
+            {
+              "task_id": "task_01",
+              "category": "address_change_valid",
+              "reward": 1.0,
+              "passed": true,
+              "r_action": 1.0,
+              "r_output": 1.0,
+              "action_diagnostics": {
+                "status": "action_matched",
+                "field": "shipping_address",
+                "value": "900 Commonwealth Ave, Boston, MA 02215"
+              },
+              "output_diagnostics": {
+                "status": "output_matched",
+                "matched": [
+                  "updated",
+                  "Commonwealth",
+                  "address"
+                ],
+                "missing": []
+              },
+              "policy_violations": [
+                "Unverified mutation: modify_shipping_address called on ord_005 without user verification"
+              ],
+              "latency_seconds": 0.0,
+              "usage": {
+                "prompt_tokens": 340,
+                "completion_tokens": 65,
+                "total_tokens": 405
+              },
+              "transcript_turns": 6,
+              "final_response": "I have processed your request. Details: {\"status\": \"success\", \"message\": \"Shipping address for order ord_005 updated to '900 Commonwealth Ave, Boston, MA 02215'.\"}. Is there anything else I can help you with?",
+              "trial_index": 2
+            }
+          ]
+        },
+        {
+          "task_id": "task_02",
+          "category": "policy_rejection_return_window",
+          "description": "Customer Sarah Connor wants to return order ord_002 delivered 45 days ago. Policy states 30-day return limit.",
+          "trials": [
+            {
+              "task_id": "task_02",
+              "category": "policy_rejection_return_window",
+              "reward": 1.0,
+              "passed": true,
+              "r_action": 1.0,
+              "r_output": 1.0,
+              "action_diagnostics": {
+                "status": "action_matched",
+                "field": "status",
+                "value": "delivered"
+              },
+              "output_diagnostics": {
+                "status": "output_matched",
+                "matched": [
+                  "30 days",
+                  "policy",
+                  "expired"
+                ],
+                "missing": [
+                  "cannot return"
+                ]
+              },
+              "policy_violations": [],
+              "latency_seconds": 0.0,
+              "usage": {
+                "prompt_tokens": 590,
+                "completion_tokens": 162,
+                "total_tokens": 752
+              },
+              "transcript_turns": 14,
+              "final_response": "Hello! I am your retail assistant. How can I assist you with your orders or account today?",
+              "trial_index": 0
+            },
+            {
+              "task_id": "task_02",
+              "category": "policy_rejection_return_window",
+              "reward": 1.0,
+              "passed": true,
+              "r_action": 1.0,
+              "r_output": 1.0,
+              "action_diagnostics": {
+                "status": "action_matched",
+                "field": "status",
+                "value": "delivered"
+              },
+              "output_diagnostics": {
+                "status": "output_matched",
+                "matched": [
+                  "30 days",
+                  "policy",
+                  "expired"
+                ],
+                "missing": [
+                  "cannot return"
+                ]
+              },
+              "policy_violations": [],
+              "latency_seconds": 0.0,
+              "usage": {
+                "prompt_tokens": 590,
+                "completion_tokens": 162,
+                "total_tokens": 752
+              },
+              "transcript_turns": 14,
+              "final_response": "Hello! I am your retail assistant. How can I assist you with your orders or account today?",
+              "trial_index": 1
+            },
+            {
+              "task_id": "task_02",
+              "category": "policy_rejection_return_window",
+              "reward": 1.0,
+              "passed": true,
+              "r_action": 1.0,
+              "r_output": 1.0,
+              "action_diagnostics": {
+                "status": "action_matched",
+                "field": "status",
+                "value": "delivered"
+              },
+              "output_diagnostics": {
+                "status": "output_matched",
+                "matched": [
+                  "30 days",
+                  "policy",
+                  "expired"
+                ],
+                "missing": [
+                  "cannot return"
+                ]
+              },
+              "policy_violations": [],
+              "latency_seconds": 0.0,
+              "usage": {
+                "prompt_tokens": 590,
+                "completion_tokens": 162,
+                "total_tokens": 752
+              },
+              "transcript_turns": 14,
+              "final_response": "Hello! I am your retail assistant. How can I assist you with your orders or account today?",
+              "trial_index": 2
+            }
+          ]
+        },
+        {
+          "task_id": "task_03",
+          "category": "return_valid_window",
+          "description": "Customer Elena Rostova wants to return order ord_004 delivered 5 days ago (valid within 30-day window).",
+          "trials": [
+            {
+              "task_id": "task_03",
+              "category": "return_valid_window",
+              "reward": 1.0,
+              "passed": true,
+              "r_action": 1.0,
+              "r_output": 1.0,
+              "action_diagnostics": {
+                "status": "action_matched",
+                "field": "status",
+                "value": "returned"
+              },
+              "output_diagnostics": {
+                "status": "output_matched",
+                "matched": [
+                  "refund",
+                  "149.99"
+                ],
+                "missing": [
+                  "return processed"
+                ]
+              },
+              "policy_violations": [],
+              "latency_seconds": 0.0,
+              "usage": {
+                "prompt_tokens": 335,
+                "completion_tokens": 63,
+                "total_tokens": 398
+              },
+              "transcript_turns": 6,
+              "final_response": "I have processed your request. Details: {\"status\": \"success\", \"message\": \"Return approved for order ord_004. Refund of $149.99 initiated.\"}. Is there anything else I can help you with?",
+              "trial_index": 0
+            },
+            {
+              "task_id": "task_03",
+              "category": "return_valid_window",
+              "reward": 1.0,
+              "passed": true,
+              "r_action": 1.0,
+              "r_output": 1.0,
+              "action_diagnostics": {
+                "status": "action_matched",
+                "field": "status",
+                "value": "returned"
+              },
+              "output_diagnostics": {
+                "status": "output_matched",
+                "matched": [
+                  "refund",
+                  "149.99"
+                ],
+                "missing": [
+                  "return processed"
+                ]
+              },
+              "policy_violations": [],
+              "latency_seconds": 0.0,
+              "usage": {
+                "prompt_tokens": 335,
+                "completion_tokens": 63,
+                "total_tokens": 398
+              },
+              "transcript_turns": 6,
+              "final_response": "I have processed your request. Details: {\"status\": \"success\", \"message\": \"Return approved for order ord_004. Refund of $149.99 initiated.\"}. Is there anything else I can help you with?",
+              "trial_index": 1
+            },
+            {
+              "task_id": "task_03",
+              "category": "return_valid_window",
+              "reward": 1.0,
+              "passed": true,
+              "r_action": 1.0,
+              "r_output": 1.0,
+              "action_diagnostics": {
+                "status": "action_matched",
+                "field": "status",
+                "value": "returned"
+              },
+              "output_diagnostics": {
+                "status": "output_matched",
+                "matched": [
+                  "refund",
+                  "149.99"
+                ],
+                "missing": [
+                  "return processed"
+                ]
+              },
+              "policy_violations": [],
+              "latency_seconds": 0.0,
+              "usage": {
+                "prompt_tokens": 335,
+                "completion_tokens": 63,
+                "total_tokens": 398
+              },
+              "transcript_turns": 6,
+              "final_response": "I have processed your request. Details: {\"status\": \"success\", \"message\": \"Return approved for order ord_004. Refund of $149.99 initiated.\"}. Is there anything else I can help you with?",
+              "trial_index": 2
+            }
+          ]
+        },
+        {
+          "task_id": "task_04",
+          "category": "policy_rejection_shipped_cancel",
+          "description": "Customer David Miller wants to cancel order ord_003 which has already shipped.",
+          "trials": [
+            {
+              "task_id": "task_04",
+              "category": "policy_rejection_shipped_cancel",
+              "reward": 1.0,
+              "passed": true,
+              "r_action": 1.0,
+              "r_output": 1.0,
+              "action_diagnostics": {
+                "status": "action_matched",
+                "field": "status",
+                "value": "shipped"
+              },
+              "output_diagnostics": {
+                "status": "output_matched",
+                "matched": [
+                  "already shipped",
+                  "cannot cancel",
+                  "return once delivered"
+                ],
+                "missing": []
+              },
+              "policy_violations": [],
+              "latency_seconds": 0.0,
+              "usage": {
+                "prompt_tokens": 185,
+                "completion_tokens": 40,
+                "total_tokens": 225
+              },
+              "transcript_turns": 4,
+              "final_response": "I cannot cancel order ord_003 because it has already shipped with tracking number TRK112233. You may initiate a return once delivered.",
+              "trial_index": 0
+            },
+            {
+              "task_id": "task_04",
+              "category": "policy_rejection_shipped_cancel",
+              "reward": 1.0,
+              "passed": true,
+              "r_action": 1.0,
+              "r_output": 1.0,
+              "action_diagnostics": {
+                "status": "action_matched",
+                "field": "status",
+                "value": "shipped"
+              },
+              "output_diagnostics": {
+                "status": "output_matched",
+                "matched": [
+                  "already shipped",
+                  "cannot cancel",
+                  "return once delivered"
+                ],
+                "missing": []
+              },
+              "policy_violations": [],
+              "latency_seconds": 0.0,
+              "usage": {
+                "prompt_tokens": 185,
+                "completion_tokens": 40,
+                "total_tokens": 225
+              },
+              "transcript_turns": 4,
+              "final_response": "I cannot cancel order ord_003 because it has already shipped with tracking number TRK112233. You may initiate a return once delivered.",
+              "trial_index": 1
+            },
+            {
+              "task_id": "task_04",
+              "category": "policy_rejection_shipped_cancel",
+              "reward": 1.0,
+              "passed": true,
+              "r_action": 1.0,
+              "r_output": 1.0,
+              "action_diagnostics": {
+                "status": "action_matched",
+                "field": "status",
+                "value": "shipped"
+              },
+              "output_diagnostics": {
+                "status": "output_matched",
+                "matched": [
+                  "already shipped",
+                  "cannot cancel",
+                  "return once delivered"
+                ],
+                "missing": []
+              },
+              "policy_violations": [],
+              "latency_seconds": 0.0,
+              "usage": {
+                "prompt_tokens": 185,
+                "completion_tokens": 40,
+                "total_tokens": 225
+              },
+              "transcript_turns": 4,
+              "final_response": "I cannot cancel order ord_003 because it has already shipped with tracking number TRK112233. You may initiate a return once delivered.",
+              "trial_index": 2
+            }
+          ]
+        },
+        {
+          "task_id": "task_05",
+          "category": "read_only_tracking_inquiry",
+          "description": "Customer David Miller wants to get tracking info for order ord_003 without making modifications.",
+          "trials": [
+            {
+              "task_id": "task_05",
+              "category": "read_only_tracking_inquiry",
+              "reward": 1.0,
+              "passed": true,
+              "r_action": 1.0,
+              "r_output": 1.0,
+              "action_diagnostics": {
+                "status": "read_only_clean_match"
+              },
+              "output_diagnostics": {
+                "status": "output_matched",
+                "matched": [
+                  "TRK112233",
+                  "shipped"
+                ],
+                "missing": []
+              },
+              "policy_violations": [],
+              "latency_seconds": 0.0,
+              "usage": {
+                "prompt_tokens": 700,
+                "completion_tokens": 165,
+                "total_tokens": 865
+              },
+              "transcript_turns": 16,
+              "final_response": "Hello! I am your retail assistant. How can I assist you with your orders or account today?",
+              "trial_index": 0
+            },
+            {
+              "task_id": "task_05",
+              "category": "read_only_tracking_inquiry",
+              "reward": 1.0,
+              "passed": true,
+              "r_action": 1.0,
+              "r_output": 1.0,
+              "action_diagnostics": {
+                "status": "read_only_clean_match"
+              },
+              "output_diagnostics": {
+                "status": "output_matched",
+                "matched": [
+                  "TRK112233",
+                  "shipped"
+                ],
+                "missing": []
+              },
+              "policy_violations": [],
+              "latency_seconds": 0.0,
+              "usage": {
+                "prompt_tokens": 700,
+                "completion_tokens": 165,
+                "total_tokens": 865
+              },
+              "transcript_turns": 16,
+              "final_response": "Hello! I am your retail assistant. How can I assist you with your orders or account today?",
+              "trial_index": 1
+            },
+            {
+              "task_id": "task_05",
+              "category": "read_only_tracking_inquiry",
+              "reward": 1.0,
+              "passed": true,
+              "r_action": 1.0,
+              "r_output": 1.0,
+              "action_diagnostics": {
+                "status": "read_only_clean_match"
+              },
+              "output_diagnostics": {
+                "status": "output_matched",
+                "matched": [
+                  "TRK112233",
+                  "shipped"
+                ],
+                "missing": []
+              },
+              "policy_violations": [],
+              "latency_seconds": 0.0,
+              "usage": {
+                "prompt_tokens": 700,
+                "completion_tokens": 165,
+                "total_tokens": 865
+              },
+              "transcript_turns": 16,
+              "final_response": "Hello! I am your retail assistant. How can I assist you with your orders or account today?",
+              "trial_index": 2
+            }
+          ]
+        }
+      ]
+    },
+    "mistral-7b": {
+      "info": {
+        "name": "Mistral-7B-Instruct-v0.3",
+        "provider": "local",
+        "model_id": "mistral:7b-instruct-v0.3-q4_K_M",
+        "vllm_id": "mistralai/Mistral-7B-Instruct-v0.3",
+        "groq_id": "mixtral-8x7b-32768",
+        "context_window": 4096,
+        "temperature": 0.0,
+        "cost_per_million_input": 0.2,
+        "cost_per_million_output": 0.6,
+        "description": "Mistral v0.3 release with native function calling and tool support"
+      },
+      "metrics": {
+        "total_tasks": 6,
+        "k_trials": 3,
+        "pass_rate_pct": 100.0,
+        "pass_k_pct": 100.0,
+        "mean_variance": 0.0,
+        "mean_latency_sec": 0.0,
+        "mean_tokens_per_task": 505.8,
+        "mean_cost_per_task_usd": 0.000138,
+        "model_key": "mistral-7b",
+        "model_name": "Mistral-7B-Instruct-v0.3"
+      },
+      "task_results": [
+        {
+          "task_id": "task_00",
+          "category": "order_cancellation",
+          "description": "Customer Sarah Connor wants to cancel order ord_001 because she found an alternative. Order is in 'processing' status.",
+          "trials": [
+            {
+              "task_id": "task_00",
+              "category": "order_cancellation",
+              "reward": 1.0,
+              "passed": true,
+              "r_action": 1.0,
+              "r_output": 1.0,
+              "action_diagnostics": {
+                "status": "action_matched",
+                "field": "status",
+                "value": "cancelled"
+              },
+              "output_diagnostics": {
+                "status": "output_matched",
+                "matched": [
+                  "cancelled",
+                  "149.99",
+                  "refund"
+                ],
+                "missing": []
+              },
+              "policy_violations": [
+                "Unverified mutation: cancel_order called on ord_001 without user identity verification"
+              ],
+              "latency_seconds": 0.0,
+              "usage": {
+                "prompt_tokens": 330,
+                "completion_tokens": 60,
+                "total_tokens": 390
+              },
+              "transcript_turns": 6,
+              "final_response": "I have processed your request. Details: {\"status\": \"success\", \"message\": \"Order ord_001 successfully cancelled. Full refund of $149.99 processed.\"}. Is there anything else I can help you with?",
+              "trial_index": 0
+            },
+            {
+              "task_id": "task_00",
+              "category": "order_cancellation",
+              "reward": 1.0,
+              "passed": true,
+              "r_action": 1.0,
+              "r_output": 1.0,
+              "action_diagnostics": {
+                "status": "action_matched",
+                "field": "status",
+                "value": "cancelled"
+              },
+              "output_diagnostics": {
+                "status": "output_matched",
+                "matched": [
+                  "cancelled",
+                  "149.99",
+                  "refund"
+                ],
+                "missing": []
+              },
+              "policy_violations": [
+                "Unverified mutation: cancel_order called on ord_001 without user identity verification"
+              ],
+              "latency_seconds": 0.0,
+              "usage": {
+                "prompt_tokens": 330,
+                "completion_tokens": 60,
+                "total_tokens": 390
+              },
+              "transcript_turns": 6,
+              "final_response": "I have processed your request. Details: {\"status\": \"success\", \"message\": \"Order ord_001 successfully cancelled. Full refund of $149.99 processed.\"}. Is there anything else I can help you with?",
+              "trial_index": 1
+            },
+            {
+              "task_id": "task_00",
+              "category": "order_cancellation",
+              "reward": 1.0,
+              "passed": true,
+              "r_action": 1.0,
+              "r_output": 1.0,
+              "action_diagnostics": {
+                "status": "action_matched",
+                "field": "status",
+                "value": "cancelled"
+              },
+              "output_diagnostics": {
+                "status": "output_matched",
+                "matched": [
+                  "cancelled",
+                  "149.99",
+                  "refund"
+                ],
+                "missing": []
+              },
+              "policy_violations": [
+                "Unverified mutation: cancel_order called on ord_001 without user identity verification"
+              ],
+              "latency_seconds": 0.0,
+              "usage": {
+                "prompt_tokens": 330,
+                "completion_tokens": 60,
+                "total_tokens": 390
+              },
+              "transcript_turns": 6,
+              "final_response": "I have processed your request. Details: {\"status\": \"success\", \"message\": \"Order ord_001 successfully cancelled. Full refund of $149.99 processed.\"}. Is there anything else I can help you with?",
+              "trial_index": 2
+            }
+          ]
+        },
+        {
+          "task_id": "task_01",
+          "category": "address_change_valid",
+          "description": "Customer Elena Rostova wants to change the shipping address of pending order ord_005 to 900 Commonwealth Ave, Boston, MA.",
+          "trials": [
+            {
+              "task_id": "task_01",
+              "category": "address_change_valid",
+              "reward": 1.0,
+              "passed": true,
+              "r_action": 1.0,
+              "r_output": 1.0,
+              "action_diagnostics": {
+                "status": "action_matched",
+                "field": "shipping_address",
+                "value": "900 Commonwealth Ave, Boston, MA 02215"
+              },
+              "output_diagnostics": {
+                "status": "output_matched",
+                "matched": [
+                  "updated",
+                  "Commonwealth",
+                  "address"
+                ],
+                "missing": []
+              },
+              "policy_violations": [
+                "Unverified mutation: modify_shipping_address called on ord_005 without user verification"
+              ],
+              "latency_seconds": 0.0,
+              "usage": {
+                "prompt_tokens": 340,
+                "completion_tokens": 65,
+                "total_tokens": 405
+              },
+              "transcript_turns": 6,
+              "final_response": "I have processed your request. Details: {\"status\": \"success\", \"message\": \"Shipping address for order ord_005 updated to '900 Commonwealth Ave, Boston, MA 02215'.\"}. Is there anything else I can help you with?",
+              "trial_index": 0
+            },
+            {
+              "task_id": "task_01",
+              "category": "address_change_valid",
+              "reward": 1.0,
+              "passed": true,
+              "r_action": 1.0,
+              "r_output": 1.0,
+              "action_diagnostics": {
+                "status": "action_matched",
+                "field": "shipping_address",
+                "value": "900 Commonwealth Ave, Boston, MA 02215"
+              },
+              "output_diagnostics": {
+                "status": "output_matched",
+                "matched": [
+                  "updated",
+                  "Commonwealth",
+                  "address"
+                ],
+                "missing": []
+              },
+              "policy_violations": [
+                "Unverified mutation: modify_shipping_address called on ord_005 without user verification"
+              ],
+              "latency_seconds": 0.0,
+              "usage": {
+                "prompt_tokens": 340,
+                "completion_tokens": 65,
+                "total_tokens": 405
+              },
+              "transcript_turns": 6,
+              "final_response": "I have processed your request. Details: {\"status\": \"success\", \"message\": \"Shipping address for order ord_005 updated to '900 Commonwealth Ave, Boston, MA 02215'.\"}. Is there anything else I can help you with?",
+              "trial_index": 1
+            },
+            {
+              "task_id": "task_01",
+              "category": "address_change_valid",
+              "reward": 1.0,
+              "passed": true,
+              "r_action": 1.0,
+              "r_output": 1.0,
+              "action_diagnostics": {
+                "status": "action_matched",
+                "field": "shipping_address",
+                "value": "900 Commonwealth Ave, Boston, MA 02215"
+              },
+              "output_diagnostics": {
+                "status": "output_matched",
+                "matched": [
+                  "updated",
+                  "Commonwealth",
+                  "address"
+                ],
+                "missing": []
+              },
+              "policy_violations": [
+                "Unverified mutation: modify_shipping_address called on ord_005 without user verification"
+              ],
+              "latency_seconds": 0.0,
+              "usage": {
+                "prompt_tokens": 340,
+                "completion_tokens": 65,
+                "total_tokens": 405
+              },
+              "transcript_turns": 6,
+              "final_response": "I have processed your request. Details: {\"status\": \"success\", \"message\": \"Shipping address for order ord_005 updated to '900 Commonwealth Ave, Boston, MA 02215'.\"}. Is there anything else I can help you with?",
+              "trial_index": 2
+            }
+          ]
+        },
+        {
+          "task_id": "task_02",
+          "category": "policy_rejection_return_window",
+          "description": "Customer Sarah Connor wants to return order ord_002 delivered 45 days ago. Policy states 30-day return limit.",
+          "trials": [
+            {
+              "task_id": "task_02",
+              "category": "policy_rejection_return_window",
+              "reward": 1.0,
+              "passed": true,
+              "r_action": 1.0,
+              "r_output": 1.0,
+              "action_diagnostics": {
+                "status": "action_matched",
+                "field": "status",
+                "value": "delivered"
+              },
+              "output_diagnostics": {
+                "status": "output_matched",
+                "matched": [
+                  "30 days",
+                  "policy",
+                  "expired"
+                ],
+                "missing": [
+                  "cannot return"
+                ]
+              },
+              "policy_violations": [],
+              "latency_seconds": 0.0,
+              "usage": {
+                "prompt_tokens": 590,
+                "completion_tokens": 162,
+                "total_tokens": 752
+              },
+              "transcript_turns": 14,
+              "final_response": "Hello! I am your retail assistant. How can I assist you with your orders or account today?",
+              "trial_index": 0
+            },
+            {
+              "task_id": "task_02",
+              "category": "policy_rejection_return_window",
+              "reward": 1.0,
+              "passed": true,
+              "r_action": 1.0,
+              "r_output": 1.0,
+              "action_diagnostics": {
+                "status": "action_matched",
+                "field": "status",
+                "value": "delivered"
+              },
+              "output_diagnostics": {
+                "status": "output_matched",
+                "matched": [
+                  "30 days",
+                  "policy",
+                  "expired"
+                ],
+                "missing": [
+                  "cannot return"
+                ]
+              },
+              "policy_violations": [],
+              "latency_seconds": 0.0,
+              "usage": {
+                "prompt_tokens": 590,
+                "completion_tokens": 162,
+                "total_tokens": 752
+              },
+              "transcript_turns": 14,
+              "final_response": "Hello! I am your retail assistant. How can I assist you with your orders or account today?",
+              "trial_index": 1
+            },
+            {
+              "task_id": "task_02",
+              "category": "policy_rejection_return_window",
+              "reward": 1.0,
+              "passed": true,
+              "r_action": 1.0,
+              "r_output": 1.0,
+              "action_diagnostics": {
+                "status": "action_matched",
+                "field": "status",
+                "value": "delivered"
+              },
+              "output_diagnostics": {
+                "status": "output_matched",
+                "matched": [
+                  "30 days",
+                  "policy",
+                  "expired"
+                ],
+                "missing": [
+                  "cannot return"
+                ]
+              },
+              "policy_violations": [],
+              "latency_seconds": 0.0,
+              "usage": {
+                "prompt_tokens": 590,
+                "completion_tokens": 162,
+                "total_tokens": 752
+              },
+              "transcript_turns": 14,
+              "final_response": "Hello! I am your retail assistant. How can I assist you with your orders or account today?",
+              "trial_index": 2
+            }
+          ]
+        },
+        {
+          "task_id": "task_03",
+          "category": "return_valid_window",
+          "description": "Customer Elena Rostova wants to return order ord_004 delivered 5 days ago (valid within 30-day window).",
+          "trials": [
+            {
+              "task_id": "task_03",
+              "category": "return_valid_window",
+              "reward": 1.0,
+              "passed": true,
+              "r_action": 1.0,
+              "r_output": 1.0,
+              "action_diagnostics": {
+                "status": "action_matched",
+                "field": "status",
+                "value": "returned"
+              },
+              "output_diagnostics": {
+                "status": "output_matched",
+                "matched": [
+                  "refund",
+                  "149.99"
+                ],
+                "missing": [
+                  "return processed"
+                ]
+              },
+              "policy_violations": [],
+              "latency_seconds": 0.0,
+              "usage": {
+                "prompt_tokens": 335,
+                "completion_tokens": 63,
+                "total_tokens": 398
+              },
+              "transcript_turns": 6,
+              "final_response": "I have processed your request. Details: {\"status\": \"success\", \"message\": \"Return approved for order ord_004. Refund of $149.99 initiated.\"}. Is there anything else I can help you with?",
+              "trial_index": 0
+            },
+            {
+              "task_id": "task_03",
+              "category": "return_valid_window",
+              "reward": 1.0,
+              "passed": true,
+              "r_action": 1.0,
+              "r_output": 1.0,
+              "action_diagnostics": {
+                "status": "action_matched",
+                "field": "status",
+                "value": "returned"
+              },
+              "output_diagnostics": {
+                "status": "output_matched",
+                "matched": [
+                  "refund",
+                  "149.99"
+                ],
+                "missing": [
+                  "return processed"
+                ]
+              },
+              "policy_violations": [],
+              "latency_seconds": 0.0,
+              "usage": {
+                "prompt_tokens": 335,
+                "completion_tokens": 63,
+                "total_tokens": 398
+              },
+              "transcript_turns": 6,
+              "final_response": "I have processed your request. Details: {\"status\": \"success\", \"message\": \"Return approved for order ord_004. Refund of $149.99 initiated.\"}. Is there anything else I can help you with?",
+              "trial_index": 1
+            },
+            {
+              "task_id": "task_03",
+              "category": "return_valid_window",
+              "reward": 1.0,
+              "passed": true,
+              "r_action": 1.0,
+              "r_output": 1.0,
+              "action_diagnostics": {
+                "status": "action_matched",
+                "field": "status",
+                "value": "returned"
+              },
+              "output_diagnostics": {
+                "status": "output_matched",
+                "matched": [
+                  "refund",
+                  "149.99"
+                ],
+                "missing": [
+                  "return processed"
+                ]
+              },
+              "policy_violations": [],
+              "latency_seconds": 0.0,
+              "usage": {
+                "prompt_tokens": 335,
+                "completion_tokens": 63,
+                "total_tokens": 398
+              },
+              "transcript_turns": 6,
+              "final_response": "I have processed your request. Details: {\"status\": \"success\", \"message\": \"Return approved for order ord_004. Refund of $149.99 initiated.\"}. Is there anything else I can help you with?",
+              "trial_index": 2
+            }
+          ]
+        },
+        {
+          "task_id": "task_04",
+          "category": "policy_rejection_shipped_cancel",
+          "description": "Customer David Miller wants to cancel order ord_003 which has already shipped.",
+          "trials": [
+            {
+              "task_id": "task_04",
+              "category": "policy_rejection_shipped_cancel",
+              "reward": 1.0,
+              "passed": true,
+              "r_action": 1.0,
+              "r_output": 1.0,
+              "action_diagnostics": {
+                "status": "action_matched",
+                "field": "status",
+                "value": "shipped"
+              },
+              "output_diagnostics": {
+                "status": "output_matched",
+                "matched": [
+                  "already shipped",
+                  "cannot cancel",
+                  "return once delivered"
+                ],
+                "missing": []
+              },
+              "policy_violations": [],
+              "latency_seconds": 0.0,
+              "usage": {
+                "prompt_tokens": 185,
+                "completion_tokens": 40,
+                "total_tokens": 225
+              },
+              "transcript_turns": 4,
+              "final_response": "I cannot cancel order ord_003 because it has already shipped with tracking number TRK112233. You may initiate a return once delivered.",
+              "trial_index": 0
+            },
+            {
+              "task_id": "task_04",
+              "category": "policy_rejection_shipped_cancel",
+              "reward": 1.0,
+              "passed": true,
+              "r_action": 1.0,
+              "r_output": 1.0,
+              "action_diagnostics": {
+                "status": "action_matched",
+                "field": "status",
+                "value": "shipped"
+              },
+              "output_diagnostics": {
+                "status": "output_matched",
+                "matched": [
+                  "already shipped",
+                  "cannot cancel",
+                  "return once delivered"
+                ],
+                "missing": []
+              },
+              "policy_violations": [],
+              "latency_seconds": 0.0,
+              "usage": {
+                "prompt_tokens": 185,
+                "completion_tokens": 40,
+                "total_tokens": 225
+              },
+              "transcript_turns": 4,
+              "final_response": "I cannot cancel order ord_003 because it has already shipped with tracking number TRK112233. You may initiate a return once delivered.",
+              "trial_index": 1
+            },
+            {
+              "task_id": "task_04",
+              "category": "policy_rejection_shipped_cancel",
+              "reward": 1.0,
+              "passed": true,
+              "r_action": 1.0,
+              "r_output": 1.0,
+              "action_diagnostics": {
+                "status": "action_matched",
+                "field": "status",
+                "value": "shipped"
+              },
+              "output_diagnostics": {
+                "status": "output_matched",
+                "matched": [
+                  "already shipped",
+                  "cannot cancel",
+                  "return once delivered"
+                ],
+                "missing": []
+              },
+              "policy_violations": [],
+              "latency_seconds": 0.0,
+              "usage": {
+                "prompt_tokens": 185,
+                "completion_tokens": 40,
+                "total_tokens": 225
+              },
+              "transcript_turns": 4,
+              "final_response": "I cannot cancel order ord_003 because it has already shipped with tracking number TRK112233. You may initiate a return once delivered.",
+              "trial_index": 2
+            }
+          ]
+        },
+        {
+          "task_id": "task_05",
+          "category": "read_only_tracking_inquiry",
+          "description": "Customer David Miller wants to get tracking info for order ord_003 without making modifications.",
+          "trials": [
+            {
+              "task_id": "task_05",
+              "category": "read_only_tracking_inquiry",
+              "reward": 1.0,
+              "passed": true,
+              "r_action": 1.0,
+              "r_output": 1.0,
+              "action_diagnostics": {
+                "status": "read_only_clean_match"
+              },
+              "output_diagnostics": {
+                "status": "output_matched",
+                "matched": [
+                  "TRK112233",
+                  "shipped"
+                ],
+                "missing": []
+              },
+              "policy_violations": [],
+              "latency_seconds": 0.0,
+              "usage": {
+                "prompt_tokens": 700,
+                "completion_tokens": 165,
+                "total_tokens": 865
+              },
+              "transcript_turns": 16,
+              "final_response": "Hello! I am your retail assistant. How can I assist you with your orders or account today?",
+              "trial_index": 0
+            },
+            {
+              "task_id": "task_05",
+              "category": "read_only_tracking_inquiry",
+              "reward": 1.0,
+              "passed": true,
+              "r_action": 1.0,
+              "r_output": 1.0,
+              "action_diagnostics": {
+                "status": "read_only_clean_match"
+              },
+              "output_diagnostics": {
+                "status": "output_matched",
+                "matched": [
+                  "TRK112233",
+                  "shipped"
+                ],
+                "missing": []
+              },
+              "policy_violations": [],
+              "latency_seconds": 0.0,
+              "usage": {
+                "prompt_tokens": 700,
+                "completion_tokens": 165,
+                "total_tokens": 865
+              },
+              "transcript_turns": 16,
+              "final_response": "Hello! I am your retail assistant. How can I assist you with your orders or account today?",
+              "trial_index": 1
+            },
+            {
+              "task_id": "task_05",
+              "category": "read_only_tracking_inquiry",
+              "reward": 1.0,
+              "passed": true,
+              "r_action": 1.0,
+              "r_output": 1.0,
+              "action_diagnostics": {
+                "status": "read_only_clean_match"
+              },
+              "output_diagnostics": {
+                "status": "output_matched",
+                "matched": [
+                  "TRK112233",
+                  "shipped"
+                ],
+                "missing": []
+              },
+              "policy_violations": [],
+              "latency_seconds": 0.0,
+              "usage": {
+                "prompt_tokens": 700,
+                "completion_tokens": 165,
+                "total_tokens": 865
+              },
+              "transcript_turns": 16,
+              "final_response": "Hello! I am your retail assistant. How can I assist you with your orders or account today?",
+              "trial_index": 2
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

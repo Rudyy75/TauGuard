@@ -1,0 +1,65 @@
+{
+  "metadata": {
+    "num_trials": 3,
+    "tasks_count": 30,
+    "environment": "tau-retail (CRM tasks: cancellations, returns, address changes, inventory queries)",
+    "hardware": "Nvidia RTX 4060 Laptop (8GB VRAM) / Groq LPU Free Tier",
+    "user_simulator": "llama-3.3-70b-versatile"
+  },
+  "models": {
+    "qwen2.5-7b": {
+      "info": {
+        "name": "Qwen2.5-7B-Instruct",
+        "model_id": "qwen2.5:7b-instruct-q4_K_M",
+        "cost_per_million_input": 0.15,
+        "cost_per_million_output": 0.60
+      },
+      "metrics": {
+        "total_tasks": 30,
+        "k_trials": 3,
+        "pass_rate_pct": 63.33,
+        "pass_k_pct": 43.33,
+        "mean_variance": 0.3812,
+        "mean_latency_sec": 1.84,
+        "mean_tokens_per_task": 742.0,
+        "mean_cost_per_task_usd": 0.000182
+      }
+    },
+    "llama-3.1-8b": {
+      "info": {
+        "name": "Llama-3.1-8B-Instruct",
+        "model_id": "llama3.1:8b-instruct-q4_K_M",
+        "cost_per_million_input": 0.10,
+        "cost_per_million_output": 0.40
+      },
+      "metrics": {
+        "total_tasks": 30,
+        "k_trials": 3,
+        "pass_rate_pct": 53.33,
+        "pass_k_pct": 30.00,
+        "mean_variance": 0.4371,
+        "mean_latency_sec": 2.12,
+        "mean_tokens_per_task": 815.0,
+        "mean_cost_per_task_usd": 0.000122
+      }
+    },
+    "mistral-7b": {
+      "info": {
+        "name": "Mistral-7B-Instruct-v0.3",
+        "model_id": "mistral:7b-instruct-v0.3-q4_K_M",
+        "cost_per_million_input": 0.20,
+        "cost_per_million_output": 0.60
+      },
+      "metrics": {
+        "total_tasks": 30,
+        "k_trials": 3,
+        "pass_rate_pct": 43.33,
+        "pass_k_pct": 20.00,
+        "mean_variance": 0.4902,
+        "mean_latency_sec": 1.95,
+        "mean_tokens_per_task": 860.0,
+        "mean_cost_per_task_usd": 0.000215
+      }
+    }
+  }
+}
