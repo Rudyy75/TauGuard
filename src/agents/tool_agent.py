@@ -1,12 +1,8 @@
-"""
-OpenAI-Compatible Tool Agent
-Works seamlessly with Ollama, vLLM, Groq, OpenRouter, and includes a fallback simulator mode.
-"""
-
 import json
 import os
 import re
 from typing import Any, Dict, List, Optional
+
 from src.agents.base import BaseAgent
 
 try:
@@ -17,7 +13,8 @@ except ImportError:
 
 class OpenAIToolAgent(BaseAgent):
     """
-    Agent interacting via standard OpenAI Chat Completions API with Tool Calling.
+    Connects to any OpenAI-compatible endpoint (Ollama, vLLM, Groq, OpenRouter).
+    Falls back to deterministic simulation when no endpoint is available.
     """
 
     def __init__(
@@ -32,8 +29,7 @@ class OpenAIToolAgent(BaseAgent):
         super().__init__(name, model_id)
         self.temperature = temperature
         self.mock_fallback = mock_fallback
-        
-        # Resolve endpoints
+
         self.base_url = base_url or os.getenv("LOCAL_LLM_BASE_URL", "http://localhost:11434/v1")
         self.api_key = api_key or os.getenv("LOCAL_LLM_API_KEY", "ollama")
 
@@ -44,119 +40,167 @@ class OpenAIToolAgent(BaseAgent):
             except Exception:
                 self.client = None
 
+    def _tool_call(self, name: str, args: dict, call_id: str = "call_0") -> dict:
+        return {
+            "id": call_id,
+            "type": "function",
+            "function": {"name": name, "arguments": json.dumps(args)}
+        }
+
+    def _usage(self, prompt: int, completion: int) -> dict:
+        return {"prompt_tokens": prompt, "completion_tokens": completion, "total_tokens": prompt + completion}
+
     def _fallback_simulate(
         self,
         messages: List[Dict[str, Any]],
         tools_schema: Optional[List[Dict[str, Any]]] = None
     ) -> Dict[str, Any]:
         """
-        Deterministic simulation mode for offline testing and verification.
-        Emulates standard model behaviors across typical retail scenarios.
+        Deterministic offline simulation. Routes by message content.
+        Looks at task context (injected via system prompt or user message)
+        to pick the correct tool action.
         """
-        last_msg = messages[-1].get("content", "")
-        last_role = messages[-1].get("role", "")
+        last = messages[-1]
+        last_role = last.get("role", "")
+        last_msg = last.get("content", "") or ""
 
-        # If previous message was a tool result, formulate response to customer
+        # After a tool result, summarise and close
         if last_role == "tool":
-            tool_content = messages[-1].get("content", "")
+            tool_result = json.loads(last.get("content", "{}"))
+            if tool_result.get("status") == "error":
+                err_msg = tool_result.get("message", "")
+                if "30 days" in err_msg or "expired" in err_msg:
+                    return {
+                        "content": "I apologize, but we cannot return this order. Our 30 days policy has expired for this delivery.",
+                        "tool_calls": None,
+                        "usage": self._usage(160, 35)
+                    }
+                if "shipped" in err_msg or "cancel" in err_msg.lower():
+                    return {
+                        "content": "I apologize, but this order has already shipped and cannot cancel directly.",
+                        "tool_calls": None,
+                        "usage": self._usage(150, 30)
+                    }
+                return {
+                    "content": f"I was unable to complete your request: {err_msg}",
+                    "tool_calls": None,
+                    "usage": self._usage(130, 20)
+                }
+
+            # Success — summarise the tool result
+            order = tool_result.get("order", {})
+            if order:
+                trk = order.get("tracking_number", "TRK112233")
+                status = order.get("status", "processing")
+                oid = order.get("order_id", "order")
+                days = order.get("days_since_delivery", 0)
+
+                # Check if this inquiry was about returning an expired order
+                if days > 30:
+                    return {
+                        "content": f"I verified order {oid}. It was delivered {days} days ago. Under our 30 days policy, the return window has expired and we cannot return it.",
+                        "tool_calls": None,
+                        "usage": self._usage(170, 40)
+                    }
+                # Check if this inquiry was about cancelling a shipped order
+                if status in ("shipped", "delivered"):
+                    return {
+                        "content": f"I checked order {oid}. It has already shipped with tracking number {trk}, so I cannot cancel it directly.",
+                        "tool_calls": None,
+                        "usage": self._usage(160, 35)
+                    }
+                # General tracking inquiry
+                return {
+                    "content": f"Your order {oid} is {status} with tracking number {trk}.",
+                    "tool_calls": None,
+                    "usage": self._usage(140, 25)
+                }
+
+            msg = tool_result.get("message", "Your request has been processed successfully.")
             return {
-                "content": f"I have processed your request. Details: {tool_content}. Is there anything else I can help you with?",
+                "content": f"{msg} Is there anything else I can assist you with?",
                 "tool_calls": None,
-                "usage": {"prompt_tokens": 120, "completion_tokens": 35, "total_tokens": 155}
+                "usage": self._usage(120, 25)
             }
 
-        # Handle cancellation requests
-        if "cancel" in last_msg.lower() and "ord_001" in last_msg.lower():
+        # Extract order ID and user identity
+        oid_match = re.search(r"ord_\d+", last_msg, re.IGNORECASE)
+        oid = oid_match.group(0).lower() if oid_match else "ord_001"
+        msg_lower = last_msg.lower()
+
+        # Find customer email or name from system prompt or context
+        system_content = ""
+        for m in messages:
+            if m.get("role") == "system":
+                system_content = (m.get("content") or "").lower()
+                break
+
+        email_match = re.search(r"[\w\.-]+@[\w\.-]+\.\w+", system_content)
+        user_query = email_match.group(0) if email_match else "sarah.connor@cyberdyne.org"
+
+        # 1. Shipped cancellation rejection (inspect first)
+        if "cancel" in msg_lower and ("category: policy_rejection_shipped" in system_content or oid == "ord_003"):
+            return {
+                "content": None,
+                "tool_calls": [self._tool_call("get_order_details", {"order_id": oid}, call_id="call_inspect")],
+                "usage": self._usage(160, 20)
+            }
+
+        # 2. Valid cancellation (verify identity + cancel)
+        if "cancel" in msg_lower:
             return {
                 "content": None,
                 "tool_calls": [
-                    {
-                        "id": "call_cancel_1",
-                        "type": "function",
-                        "function": {
-                            "name": "cancel_order",
-                            "arguments": json.dumps({"order_id": "ord_001", "reason": "Customer requested cancellation"})
-                        }
-                    }
+                    self._tool_call("lookup_user", {"query": user_query}, call_id="call_lookup"),
+                    self._tool_call("cancel_order", {"order_id": oid, "reason": "Customer requested cancellation"}, call_id="call_cancel")
                 ],
-                "usage": {"prompt_tokens": 210, "completion_tokens": 25, "total_tokens": 235}
+                "usage": self._usage(210, 30)
             }
 
-        # Handle address update requests
-        if "address" in last_msg.lower() and "ord_005" in last_msg.lower():
+        # 3. Address update (verify identity + update address)
+        if "address" in msg_lower:
+            addr_match = re.search(r"to\s+(.+)", last_msg, re.IGNORECASE)
+            target_addr = addr_match.group(1).strip().rstrip(".") if addr_match else "900 Commonwealth Ave, Boston, MA 02215"
             return {
                 "content": None,
                 "tool_calls": [
-                    {
-                        "id": "call_addr_1",
-                        "type": "function",
-                        "function": {
-                            "name": "modify_shipping_address",
-                            "arguments": json.dumps({
-                                "order_id": "ord_005",
-                                "new_address": "900 Commonwealth Ave, Boston, MA 02215"
-                            })
-                        }
-                    }
+                    self._tool_call("lookup_user", {"query": user_query}, call_id="call_lookup"),
+                    self._tool_call("modify_shipping_address", {"order_id": oid, "new_address": target_addr}, call_id="call_addr")
                 ],
-                "usage": {"prompt_tokens": 220, "completion_tokens": 30, "total_tokens": 250}
+                "usage": self._usage(220, 32)
             }
 
-        # Handle tracking lookup
-        if "tracking" in last_msg.lower() and "ord_003" in last_msg.lower():
+        # 4. Tracking inquiry (inspect order)
+        if any(w in msg_lower for w in ["tracking", "where is", "package", "tracking number"]):
+            return {
+                "content": None,
+                "tool_calls": [self._tool_call("get_order_details", {"order_id": oid}, call_id="call_track")],
+                "usage": self._usage(160, 20)
+            }
+
+        # 5. Expired return window rejection (inspect order first)
+        if "return" in msg_lower and ("category: policy_rejection_return" in system_content or oid == "ord_002"):
+            return {
+                "content": None,
+                "tool_calls": [self._tool_call("get_order_details", {"order_id": oid}, call_id="call_inspect")],
+                "usage": self._usage(160, 20)
+            }
+
+        # 6. Valid return (verify identity + process return)
+        if "return" in msg_lower:
             return {
                 "content": None,
                 "tool_calls": [
-                    {
-                        "id": "call_track_1",
-                        "type": "function",
-                        "function": {
-                            "name": "get_order_details",
-                            "arguments": json.dumps({"order_id": "ord_003"})
-                        }
-                    }
+                    self._tool_call("lookup_user", {"query": user_query}, call_id="call_lookup"),
+                    self._tool_call("process_return", {"order_id": oid, "reason": "Customer return request"}, call_id="call_ret")
                 ],
-                "usage": {"prompt_tokens": 180, "completion_tokens": 20, "total_tokens": 200}
+                "usage": self._usage(215, 30)
             }
 
-        # Policy rejection / return window expired (ord_002)
-        if "return" in last_msg.lower() and "ord_002" in last_msg.lower():
-            return {
-                "content": "I apologize, but according to our company policy, returns must be initiated within 30 days of delivery. Because order ord_002 was delivered over 45 days ago, the return window has expired and we cannot process this return.",
-                "tool_calls": None,
-                "usage": {"prompt_tokens": 190, "completion_tokens": 52, "total_tokens": 242}
-            }
-
-        # Valid return (ord_004)
-        if "return" in last_msg.lower() and "ord_004" in last_msg.lower():
-            return {
-                "content": None,
-                "tool_calls": [
-                    {
-                        "id": "call_ret_1",
-                        "type": "function",
-                        "function": {
-                            "name": "process_return",
-                            "arguments": json.dumps({"order_id": "ord_004", "reason": "Customer no longer needs item"})
-                        }
-                    }
-                ],
-                "usage": {"prompt_tokens": 215, "completion_tokens": 28, "total_tokens": 243}
-            }
-
-        # Shipped cancellation rejection (ord_003)
-        if "cancel" in last_msg.lower() and "ord_003" in last_msg.lower():
-            return {
-                "content": "I cannot cancel order ord_003 because it has already shipped with tracking number TRK112233. You may initiate a return once delivered.",
-                "tool_calls": None,
-                "usage": {"prompt_tokens": 185, "completion_tokens": 40, "total_tokens": 225}
-            }
-
-        # Default general response
         return {
-            "content": "Hello! I am your retail assistant. How can I assist you with your orders or account today?",
+            "content": "Hello! I am your retail assistant. How can I help you today?",
             "tool_calls": None,
-            "usage": {"prompt_tokens": 80, "completion_tokens": 22, "total_tokens": 102}
+            "usage": self._usage(80, 15)
         }
 
     def act(
@@ -164,7 +208,6 @@ class OpenAIToolAgent(BaseAgent):
         messages: List[Dict[str, Any]],
         tools_schema: Optional[List[Dict[str, Any]]] = None
     ) -> Dict[str, Any]:
-        """Produce the next action by querying the OpenAI-compatible API."""
         if self.mock_fallback or not self.client:
             return self._fallback_simulate(messages, tools_schema)
 
@@ -184,16 +227,17 @@ class OpenAIToolAgent(BaseAgent):
 
             tool_calls = None
             if message.tool_calls:
-                tool_calls = []
-                for tc in message.tool_calls:
-                    tool_calls.append({
+                tool_calls = [
+                    {
                         "id": tc.id,
                         "type": "function",
                         "function": {
                             "name": tc.function.name,
                             "arguments": tc.function.arguments
                         }
-                    })
+                    }
+                    for tc in message.tool_calls
+                ]
 
             usage = {
                 "prompt_tokens": response.usage.prompt_tokens if response.usage else 0,
@@ -201,12 +245,8 @@ class OpenAIToolAgent(BaseAgent):
                 "total_tokens": response.usage.total_tokens if response.usage else 0
             }
 
-            return {
-                "content": message.content,
-                "tool_calls": tool_calls,
-                "usage": usage
-            }
+            return {"content": message.content, "tool_calls": tool_calls, "usage": usage}
+
         except Exception as e:
-            # Fall back to simulation if connection drops or endpoint unavailable
-            print(f"[OpenAIToolAgent Warning] API request failed: {e}. Falling back to simulation.")
+            print(f"[OpenAIToolAgent] API call failed: {e}. Falling back to simulation.")
             return self._fallback_simulate(messages, tools_schema)

@@ -56,6 +56,7 @@ INITIAL_DATABASE: Dict[str, Any] = {
             "status": "delivered",  # Delivered 45 days ago -> violates 30-day return window!
             "order_date": "2026-09-10",
             "delivery_date": "2026-09-12",
+            "days_since_delivery": 45,
             "items": [{"product_id": "prd_02", "qty": 1, "price": 89.99}],
             "total_amount": 89.99,
             "shipping_address": "404 SkyNet Way, Los Angeles, CA 90001",
@@ -79,6 +80,7 @@ INITIAL_DATABASE: Dict[str, Any] = {
             "status": "delivered",  # Delivered 5 days ago -> valid for return
             "order_date": "2026-10-20",
             "delivery_date": "2026-10-22",
+            "days_since_delivery": 5,
             "items": [{"product_id": "prd_01", "qty": 1, "price": 149.99}],
             "total_amount": 149.99,
             "shipping_address": "77 Beacon Street, Boston, MA 02108",
@@ -278,23 +280,21 @@ class MockRetailEnvironment:
     Stateful CRM sandbox tracking mutations, tool execution logs, and policy compliance.
     """
     def __init__(self, initial_db: Optional[Dict[str, Any]] = None):
-        if initial_db is not None:
-            self.db = copy.deepcopy(initial_db)
-        else:
-            self.db = copy.deepcopy(INITIAL_DATABASE)
-        
+        self.initial_template = copy.deepcopy(initial_db if initial_db is not None else INITIAL_DATABASE)
+        self.db = copy.deepcopy(self.initial_template)
         self.action_history: List[Dict[str, Any]] = []
         self.policy_violations: List[str] = []
+        self.auth_violations: List[str] = []
         self.verified_users: set = set()
 
     def reset(self, initial_db: Optional[Dict[str, Any]] = None):
         """Reset environment to fresh state."""
         if initial_db is not None:
-            self.db = copy.deepcopy(initial_db)
-        else:
-            self.db = copy.deepcopy(INITIAL_DATABASE)
+            self.initial_template = copy.deepcopy(initial_db)
+        self.db = copy.deepcopy(self.initial_template)
         self.action_history.clear()
         self.policy_violations.clear()
+        self.auth_violations.clear()
         self.verified_users.clear()
 
     def execute_tool(self, tool_name: str, arguments: Dict[str, Any]) -> Dict[str, Any]:
@@ -333,7 +333,9 @@ class MockRetailEnvironment:
             
             # Policy Rule 2: Verification check
             if order["user_id"] not in self.verified_users:
-                self.policy_violations.append(f"Unverified mutation: cancel_order called on {oid} without user identity verification")
+                msg = f"Unverified mutation: cancel_order called on {oid} without user identity verification"
+                self.auth_violations.append(msg)
+                self.policy_violations.append(msg)
 
             # Execute cancellation
             order["status"] = "cancelled"
@@ -359,7 +361,9 @@ class MockRetailEnvironment:
                 }
 
             if order["user_id"] not in self.verified_users:
-                self.policy_violations.append(f"Unverified mutation: modify_shipping_address called on {oid} without user verification")
+                msg = f"Unverified mutation: modify_shipping_address called on {oid} without user verification"
+                self.auth_violations.append(msg)
+                self.policy_violations.append(msg)
 
             order["shipping_address"] = new_addr
             return {"status": "success", "message": f"Shipping address for order {oid} updated to '{new_addr}'."}
@@ -373,13 +377,13 @@ class MockRetailEnvironment:
             if order["status"] != "delivered":
                 return {"status": "error", "message": f"Order {oid} is not marked as delivered."}
 
-            # Check 30-day window policy (ord_002 delivered 45 days ago)
-            if oid == "ord_002":
+            # Check 30-day window policy
+            if order.get("days_since_delivery", 0) > 30:
                 self.policy_violations.append(f"Attempted return on order {oid} outside 30-day policy window")
                 return {
                     "status": "error",
                     "code": "POLICY_VIOLATION",
-                    "message": "Policy Violation: Order ord_002 was delivered >30 days ago. Return window expired."
+                    "message": f"Policy Violation: Order {oid} was delivered >30 days ago. Return window expired."
                 }
 
             order["status"] = "returned"

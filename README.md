@@ -1,4 +1,4 @@
-# ⚡ CRM Agent Benchmark & Grader Audit (3-Day Sprint)
+# 🛡️ TauGuard: CRM Agent Benchmark & Grader Audit
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![Hardware: RTX 4060 Laptop](https://img.shields.io/badge/Hardware-RTX%204060%20Laptop%20(8GB)-green.svg)](#hardware--budget-setup)
@@ -91,7 +91,9 @@ c:\Users\yellu\Documents\Stuff\Projects Stuff\RL\
 ├── src/
 │   ├── envs/
 │   │   ├── mock_retail.py       # CRM sandbox (Orders, Users, Inventory, Policies)
-│   │   └── grader.py            # Tau-bench exact grader (r_action * r_output)
+│   │   ├── grader.py            # Tau-bench exact grader (r_action * r_output)
+│   │   ├── patched_grader.py    # Robust grader (state diffing + auth/policy gate)
+│   │   └── task_generator.py    # 30-task parameterized benchmark generator
 │   ├── agents/
 │   │   ├── tool_agent.py        # OpenAI-compatible tool agent (Ollama / vLLM / Groq)
 │   │   └── mock_user.py         # Customer simulator
@@ -120,8 +122,8 @@ c:\Users\yellu\Documents\Stuff\Projects Stuff\RL\
 
 ### 1. Clone & Install Dependencies
 ```bash
-git clone https://github.com/your-username/tau-bench-crm-audit.git
-cd tau-bench-crm-audit
+git clone https://github.com/Rudyy75/TauGuard.git
+cd TauGuard
 pip install -r requirements.txt
 ```
 
@@ -132,29 +134,28 @@ python -m experiments.run_all_audits
 
 ### 3. Run Multi-Trial Benchmark Harness
 ```bash
-# Offline simulation / smoke test mode
-python harness.py --mock --trials 3 --output results/run_output.json
+# Compare standard Tau-Bench vs Patched Safe Grader across 30 tasks (offline simulation)
+python harness.py --mock --trials 3 --grader both --tasks-count 30 --output results/run_output.json
 
 # Live run with local models via Ollama
 ollama pull qwen2.5:7b-instruct-q4_K_M
-python harness.py --trials 3 --models qwen2.5-7b
+python harness.py --trials 3 --models qwen2.5-7b --grader both
 ```
 
-### 4. Generate Reports
+### 4. Run Grader Unit Tests
+```bash
+python -m pytest tests/ -v
+```
+
+### 5. Generate Reports
 ```bash
 python generate_report.py --input results/run_output.json --output results/benchmark_summary.md
 ```
 
 ---
 
-## 📬 Message to Arushi
+## 🔬 Reproducibility & Live Evaluation Notes
 
-```
-Hi Arushi,
-
-Thanks for the chat! You asked about benchmarks, so I built an audit harness on τ-bench's retail tasks: [repo link]. 
-
-Key finding: the grader grants a 100% pass score to agents that violate security policies and corrupt database records, while penalizing semantically correct answers due to rigid substring matching.
-
-Do you have an intern spot open, or a specific task I could try out on your stack?
-```
+- **Baseline Data (`results/baseline_runs.json`):** Evaluated against local GGUF checkpoints (`Q4_K_M`) using an RTX 4060 Laptop (8GB VRAM) and Ollama, tracking $pass^3$ statistical reliability across repeated seeds.
+- **Offline / Zero-Cost Simulation (`--mock`):** Enables instant, deterministic verification of harness orchestration, tool dispatch, and grading logic without requiring local GPU serving or cloud API credentials.
+- **Audit Verification:** All four benchmark failure modes are codified as runnable unit tests in `tests/test_graders.py` and standalone scripts in `experiments/`.

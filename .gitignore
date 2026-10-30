@@ -24,6 +24,7 @@ wheels/
 *.egg-info/
 .installed.cfg
 *.egg
+docs/
 
 # Virtual environments
 venv/
@@ -33,6 +34,9 @@ ENV/
 # Environment variables
 .env
 .env.local
+
+# Testing
+.pytest_cache/
 
 # IDEs
 .vscode/

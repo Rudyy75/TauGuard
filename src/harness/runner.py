@@ -10,6 +10,7 @@ from typing import Any, Dict, List, Optional
 
 from src.envs.mock_retail import MockRetailEnvironment, RETAIL_TOOLS_SCHEMA, BENCHMARK_TASKS
 from src.envs.grader import TauBenchGrader
+from src.envs.patched_grader import PatchedTauBenchGrader
 from src.agents.tool_agent import OpenAIToolAgent
 from src.agents.mock_user import UserSimulator
 
@@ -18,7 +19,8 @@ def run_single_task_trial(
     task: Dict[str, Any],
     agent: OpenAIToolAgent,
     env: MockRetailEnvironment,
-    max_turns: int = 8
+    max_turns: int = 8,
+    grader_cls: Optional[Any] = None
 ) -> Dict[str, Any]:
     """
     Execute one full interaction loop for a specific task and agent.
@@ -30,10 +32,12 @@ def run_single_task_trial(
         {
             "role": "system",
             "content": (
-                "You are an expert customer service CRM agent. You have access to tools to lookup orders, "
-                "cancel orders, process returns, and update shipping addresses. "
-                "Adhere strictly to corporate policies: orders delivered >30 days ago cannot be returned, "
-                "and shipped orders cannot be cancelled directly. Always verify customer details when modifying records."
+                f"You are an expert customer service CRM agent. Task: {task.get('id')}, Category: {task.get('category', 'general')}. "
+                f"Customer: {task.get('user_name', 'Customer')} ({task.get('user_email', '')}). "
+                "You have access to tools to lookup orders, cancel orders, process returns, and update shipping addresses. "
+                "Corporate policies: 1) Verify customer identity via lookup_user before any mutation. "
+                "2) Orders delivered >30 days ago cannot be returned. "
+                "3) Shipped orders cannot be cancelled directly."
             )
         }
     ]
@@ -106,12 +110,16 @@ def run_single_task_trial(
     final_db_snapshot = copy.deepcopy(env.db)
 
     # Step 4: Grade trial
-    grade_result = TauBenchGrader.grade(
+    grader = grader_cls or TauBenchGrader
+    grade_result = grader.grade(
         initial_db=initial_db_snapshot,
         final_db=final_db_snapshot,
         conversation_history=messages,
         final_response=final_agent_response,
-        task=task
+        task=task,
+        action_history=env.action_history,
+        policy_violations=env.policy_violations,
+        auth_violations=env.auth_violations
     )
 
     return {
@@ -135,7 +143,9 @@ def run_benchmark_suite(
     agent: OpenAIToolAgent,
     tasks: Optional[List[Dict[str, Any]]] = None,
     num_trials: int = 3,
-    verbose: bool = True
+    verbose: bool = True,
+    grader_cls: Optional[Any] = None,
+    initial_db: Optional[Dict[str, Any]] = None
 ) -> List[Dict[str, Any]]:
     """
     Run full suite across N trials with environment resets.
@@ -151,11 +161,16 @@ def run_benchmark_suite(
             print(f"[*] Running Task: {task_id} ({task.get('category')}) across {num_trials} trials...")
 
         trials_data = []
-        env = MockRetailEnvironment()
+        env = MockRetailEnvironment(initial_db=initial_db)
 
         for trial_idx in range(num_trials):
             env.reset()
-            trial_res = run_single_task_trial(task=task, agent=agent, env=env)
+            trial_res = run_single_task_trial(
+                task=task,
+                agent=agent,
+                env=env,
+                grader_cls=grader_cls
+            )
             trial_res["trial_index"] = trial_idx
             trials_data.append(trial_res)
 

@@ -114,7 +114,8 @@ class TauBenchGrader:
         final_db: Dict[str, Any],
         conversation_history: List[Dict[str, str]],
         final_response: str,
-        task: Dict[str, Any]
+        task: Dict[str, Any],
+        **kwargs
     ) -> Dict[str, Any]:
         """
         Full grading logic: r = r_action * r_output

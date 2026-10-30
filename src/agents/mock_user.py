@@ -1,9 +1,4 @@
-"""
-User Simulator
-Emulates real customer behavior following task instructions.
-"""
-
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Tuple
 import os
 
 try:
@@ -14,7 +9,8 @@ except ImportError:
 
 class UserSimulator:
     """
-    Simulates a retail customer driven by task goal and conversation context.
+    Simulates a retail customer for multi-turn evaluation.
+    Supplies identity on demand, closes conversation when satisfied.
     """
 
     def __init__(
@@ -23,57 +19,53 @@ class UserSimulator:
         model_id: str = "llama-3.3-70b-versatile",
         base_url: Optional[str] = None,
         api_key: Optional[str] = None,
-        mock_mode: bool = False
     ):
         self.task = task
         self.model_id = model_id
-        self.mock_mode = mock_mode
         self.turn_count = 0
 
         self.base_url = base_url or os.getenv("GROQ_BASE_URL", "https://api.groq.com/openai/v1")
         self.api_key = api_key or os.getenv("GROQ_API_KEY", "")
 
         self.client = None
-        if OpenAI and self.api_key and not mock_mode:
+        if OpenAI and self.api_key:
             try:
                 self.client = OpenAI(base_url=self.base_url, api_key=self.api_key)
             except Exception:
                 self.client = None
 
-    def respond(self, last_agent_message: str) -> Tuple_Response:
+    def respond(self, last_agent_message: str) -> Tuple[str, bool]:
         """
-        Generate user response based on task goal and agent's question.
-        Returns: (response_text, is_satisfied_or_done)
+        Returns (response_text, is_done).
+        is_done=True signals the episode should end.
         """
         self.turn_count += 1
         agent_lower = last_agent_message.lower()
 
-        # If agent fulfilled or answered, end conversation
-        if any(term in agent_lower for term in [
-            "successfully cancelled", "updated to", "refund of", "tracking number",
-            "cannot return", "cannot cancel", "policy violation", "return approved"
-        ]):
-            return "Thank you so much for your assistance! That is all I needed.", True
+        # Conversation ends when the agent confirms an outcome
+        resolution_signals = [
+            "successfully cancelled", "has been cancelled",
+            "updated to", "address updated", "has been updated",
+            "refund of", "return approved", "return processed",
+            "tracking number", "cannot return", "cannot cancel",
+            "return window", "already shipped", "policy",
+        ]
+        if any(signal in agent_lower for signal in resolution_signals):
+            return "Thank you, that is all I needed.", True
 
-        # Initial turn returns user goal
+        # Turn 1: state the problem
         if self.turn_count == 1:
             return self.task["user_goal"], False
 
-        # If agent asks for verification or user details
-        if any(v in agent_lower for v in ["name", "email", "verify", "phone", "order id"]):
-            uid = self.task.get("user_id", "usr_101")
-            if uid == "usr_101":
-                return "My name is Sarah Connor and my email is sarah.connor@cyberdyne.org.", False
-            elif uid == "usr_102":
-                return "My name is David Miller and my email is d.miller@techflow.io.", False
-            else:
-                return "My name is Elena Rostova and my email is elena.r@novacorp.com.", False
+        # Agent is asking for identity verification
+        if any(v in agent_lower for v in ["name", "email", "verify", "phone", "confirm your"]):
+            name = self.task.get("user_name", "")
+            email = self.task.get("user_email", "")
+            if name and email:
+                return f"My name is {name} and my email is {email}.", False
 
-        # If turn count exceeds limit, close
+        # Hard cap to avoid infinite loops
         if self.turn_count > 6:
-            return "Okay, thank you for your help.", True
+            return "Okay, thank you.", True
 
         return "Could you please confirm if my request has been processed?", False
-
-
-Tuple_Response = Any

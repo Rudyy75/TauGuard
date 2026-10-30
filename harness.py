@@ -1,8 +1,3 @@
-"""
-Tau-Bench CRM Harness CLI (Day 2)
-Logs pass rate, pass^k reliability, variance across trials, latency, token consumption, and cost.
-"""
-
 import argparse
 import json
 import os
@@ -12,7 +7,6 @@ import yaml
 from rich.console import Console
 from rich.table import Table
 
-# Ensure Windows terminal doesn't crash on utf-8 characters
 if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8")
 if hasattr(sys.stderr, "reconfigure"):
@@ -21,6 +15,9 @@ if hasattr(sys.stderr, "reconfigure"):
 console = Console(highlight=False)
 
 from src.envs.mock_retail import BENCHMARK_TASKS
+from src.envs.grader import TauBenchGrader
+from src.envs.patched_grader import PatchedTauBenchGrader
+from src.envs.task_generator import generate_crm_benchmark
 from src.agents.tool_agent import OpenAIToolAgent
 from src.harness.runner import run_benchmark_suite
 from src.harness.metrics import aggregate_model_metrics
@@ -41,26 +38,46 @@ def main():
     parser.add_argument("--output", type=str, default="results/run_output.json", help="Destination path for raw output JSON")
     parser.add_argument("--mock", action="store_true", help="Force deterministic simulation mode (zero cost/offline)")
     parser.add_argument("--config", type=str, default="configs/models.yaml", help="Path to models YAML config")
+    parser.add_argument("--grader", choices=["tau_bench", "patched", "both"], default="both",
+                        help="Grader to evaluate against: standard tau_bench, patched safe grader, or both")
+    parser.add_argument("--tasks-count", type=int, choices=[6, 30], default=6,
+                        help="Number of tasks: 6 (canonical suite) or 30 (augmented suite)")
     args = parser.parse_args()
 
     cfg = load_config(args.config)
     models_cfg = cfg.get("models", {})
 
-    console.print(f"[bold cyan]====================================================================[/bold cyan]")
-    console.print(f"[bold green]   CRM AGENTIC BENCHMARK HARNESS (Tau-Bench Specification)[/bold green]")
-    console.print(f"[bold cyan]====================================================================[/bold cyan]")
+    # Select task suite
+    if args.tasks_count == 30:
+        tasks, initial_db = generate_crm_benchmark(num_tasks=30)
+    else:
+        tasks = BENCHMARK_TASKS
+        initial_db = None
+
+    graders_to_run = []
+    if args.grader in ("tau_bench", "both"):
+        graders_to_run.append(("Tau-Bench (Standard)", TauBenchGrader, "tau_bench"))
+    if args.grader in ("patched", "both"):
+        graders_to_run.append(("Patched (Safe)", PatchedTauBenchGrader, "patched"))
+
+    console.print("[bold cyan]====================================================================[/bold cyan]")
+    console.print("[bold green]   CRM AGENTIC BENCHMARK HARNESS (Tau-Bench vs Patched Grader)[/bold green]")
+    console.print("[bold cyan]====================================================================[/bold cyan]")
     console.print(f"[*] Trials per task: [bold]{args.trials}[/bold]")
     console.print(f"[*] Models selected: [bold]{', '.join(args.models)}[/bold]")
-    console.print(f"[*] Simulation fallback mode: [bold]{args.mock}[/bold]\n")
+    console.print(f"[*] Tasks count:     [bold]{len(tasks)}[/bold]")
+    console.print(f"[*] Grader modes:    [bold]{args.grader}[/bold]")
+    console.print(f"[*] Mock simulation: [bold]{args.mock}[/bold]\n")
 
     Path(os.path.dirname(args.output) or ".").mkdir(parents=True, exist_ok=True)
 
-    all_models_summary = []
+    summary_rows = []
     full_benchmark_record = {
         "metadata": {
             "num_trials": args.trials,
-            "tasks_count": len(BENCHMARK_TASKS),
-            "mock_mode": args.mock
+            "tasks_count": len(tasks),
+            "mock_mode": args.mock,
+            "grader_mode": args.grader
         },
         "models": {}
     }
@@ -81,55 +98,62 @@ def main():
             mock_fallback=args.mock
         )
 
-        task_results = run_benchmark_suite(
-            agent=agent,
-            tasks=BENCHMARK_TASKS,
-            num_trials=args.trials,
-            verbose=True
-        )
-
         cost_cfg = {
             "cost_per_m_input": m_info.get("cost_per_million_input", 0.15),
             "cost_per_m_output": m_info.get("cost_per_million_output", 0.60)
         }
 
-        metrics = aggregate_model_metrics(task_results, k_trials=args.trials, cost_config=cost_cfg)
-        metrics["model_key"] = m_key
-        metrics["model_name"] = m_info.get("name", m_key)
-        all_models_summary.append(metrics)
+        full_benchmark_record["models"][m_key] = {"info": m_info, "evaluations": {}}
 
-        full_benchmark_record["models"][m_key] = {
-            "info": m_info,
-            "metrics": metrics,
-            "task_results": task_results
-        }
+        for g_label, g_cls, g_key in graders_to_run:
+            console.print(f"  -> Scoring with: [cyan]{g_label}[/cyan]")
+            task_results = run_benchmark_suite(
+                agent=agent,
+                tasks=tasks,
+                num_trials=args.trials,
+                verbose=False,
+                grader_cls=g_cls,
+                initial_db=initial_db
+            )
+
+            metrics = aggregate_model_metrics(task_results, k_trials=args.trials, cost_config=cost_cfg)
+            metrics["model_name"] = m_info.get("name", m_key)
+            metrics["grader_label"] = g_label
+
+            full_benchmark_record["models"][m_key]["evaluations"][g_key] = {
+                "metrics": metrics,
+                "task_results": task_results
+            }
+
+            summary_rows.append(metrics)
+
         console.print()
 
-    # Save complete JSON
+    # Save output JSON
     with open(args.output, "w", encoding="utf-8") as f:
         json.dump(full_benchmark_record, f, indent=2)
 
-    console.print(f"[bold green][SUCCESS] Benchmark complete. Raw logs saved to: {args.output}[/bold green]\n")
+    console.print(f"[bold green][SUCCESS] Benchmark complete. Saved to: {args.output}[/bold green]\n")
 
-    # Render summary table
-    table = Table(title="Agentic CRM Benchmark Results (Multi-Trial Evaluation)")
+    # Render results table
+    table = Table(title="Benchmark Comparison: Standard Tau-Bench vs Patched Safe Grader")
     table.add_column("Model", style="bold white")
-    table.add_column("Pass Rate (%)", style="cyan", justify="right")
+    table.add_column("Grader Engine", style="cyan")
+    table.add_column("Pass Rate (%)", style="bold yellow", justify="right")
     table.add_column(f"pass^{args.trials} (%)", style="bold green", justify="right")
     table.add_column("Variance (σ)", style="magenta", justify="right")
-    table.add_column("Avg Latency (s)", style="yellow", justify="right")
-    table.add_column("Avg Tokens", style="blue", justify="right")
-    table.add_column("Est. Cost/Task ($)", style="white", justify="right")
+    table.add_column("Avg Latency", style="blue", justify="right")
+    table.add_column("Est. Cost/Task", style="white", justify="right")
 
-    for s in all_models_summary:
+    for row in summary_rows:
         table.add_row(
-            s["model_name"],
-            f"{s['pass_rate_pct']:.1f}%",
-            f"{s['pass_k_pct']:.1f}%",
-            f"{s['mean_variance']:.3f}",
-            f"{s['mean_latency_sec']:.2f}s",
-            f"{s['mean_tokens_per_task']:.0f}",
-            f"${s['mean_cost_per_task_usd']:.6f}"
+            row["model_name"],
+            row["grader_label"],
+            f"{row['pass_rate_pct']:.1f}%",
+            f"{row['pass_k_pct']:.1f}%",
+            f"{row['mean_variance']:.3f}",
+            f"{row['mean_latency_sec']:.2f}s",
+            f"${row['mean_cost_per_task_usd']:.6f}"
         )
 
     console.print(table)

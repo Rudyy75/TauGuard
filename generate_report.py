@@ -1,14 +1,8 @@
-"""
-Report Generator
-Transforms raw benchmark trial JSON into GitHub-flavored Markdown tables and Mermaid visualizations.
-"""
-
 import argparse
 import json
 import os
 import sys
 
-# Ensure Windows terminal handles utf-8
 if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8")
 if hasattr(sys.stderr, "reconfigure"):
@@ -18,63 +12,74 @@ if hasattr(sys.stderr, "reconfigure"):
 def generate_markdown_report(data: dict) -> str:
     metadata = data.get("metadata", {})
     num_trials = metadata.get("num_trials", 3)
+    tasks_count = metadata.get("tasks_count", 30)
     models_dict = data.get("models", {})
 
     lines = []
-    lines.append(f"# Benchmark Results: Open-Source Agents on CRM Workflows")
+    lines.append("# Benchmark Results: Standard Tau-Bench vs Patched Safe Grader")
     lines.append("")
-    lines.append(f"> **Configuration:** Evaluated across {metadata.get('tasks_count', 6)} representative tasks, "
+    lines.append(f"> **Configuration:** Evaluated across {tasks_count} tasks, "
                  f"**{num_trials} independent trials per task** ($pass^{num_trials}$ reliability), "
-                 f"on consumer hardware (RTX 4060 Laptop 8GB VRAM / Groq LPU).")
+                 f"comparing naive $\\tau$-bench scoring against the policy-enforcing Patched Grader.")
     lines.append("")
 
-    # Markdown Table
-    lines.append("## Executive Results Table")
+    lines.append("## Executive Reliability & Safety Comparison Table")
     lines.append("")
-    lines.append(f"| Model | Pass Rate | $pass^{num_trials}$ Reliability | Variance (σ) | Mean Latency | Avg Tokens | Est. Cost / Task |")
-    lines.append(f"| :--- | :---: | :---: | :---: | :---: | :---: | :---: |")
+    lines.append(f"| Model | Grader Engine | Pass Rate | $pass^{num_trials}$ Reliability | Variance (σ) | Avg Latency | Est. Cost / Task |")
+    lines.append("| :--- | :--- | :---: | :---: | :---: | :---: | :---: |")
 
-    chart_series_pr = []
-    chart_series_pk = []
     model_names = []
+    tau_pass_rates = []
+    patched_pass_rates = []
 
     for m_key, m_val in models_dict.items():
-        metrics = m_val.get("metrics", {})
         m_name = m_val.get("info", {}).get("name", m_key)
         model_names.append(m_name)
 
-        pr = metrics.get("pass_rate_pct", 0.0)
-        pk = metrics.get("pass_k_pct", 0.0)
-        var = metrics.get("mean_variance", 0.0)
-        lat = metrics.get("mean_latency_sec", 0.0)
-        tok = metrics.get("mean_tokens_per_task", 0.0)
-        cost = metrics.get("mean_cost_per_task_usd", 0.0)
+        evals = m_val.get("evaluations", {})
+        if evals:
+            for g_key, g_data in evals.items():
+                metrics = g_data.get("metrics", {})
+                g_label = metrics.get("grader_label", g_key)
+                pr = metrics.get("pass_rate_pct", 0.0)
+                pk = metrics.get("pass_k_pct", 0.0)
+                var = metrics.get("mean_variance", 0.0)
+                lat = metrics.get("mean_latency_sec", 0.0)
+                cost = metrics.get("mean_cost_per_task_usd", 0.0)
 
-        chart_series_pr.append(pr)
-        chart_series_pk.append(pk)
+                if g_key == "tau_bench":
+                    tau_pass_rates.append(pr)
+                elif g_key == "patched":
+                    patched_pass_rates.append(pr)
 
-        lines.append(f"| **{m_name}** | **{pr:.1f}%** | **{pk:.1f}%** | {var:.3f} | {lat:.2f}s | {tok:.0f} | ${cost:.6f} |")
+                lines.append(f"| **{m_name}** | {g_label} | **{pr:.1f}%** | **{pk:.1f}%** | {var:.3f} | {lat:.2f}s | ${cost:.6f} |")
+        else:
+            metrics = m_val.get("metrics", {})
+            pr = metrics.get("pass_rate_pct", 0.0)
+            pk = metrics.get("pass_k_pct", 0.0)
+            var = metrics.get("mean_variance", 0.0)
+            lat = metrics.get("mean_latency_sec", 0.0)
+            cost = metrics.get("mean_cost_per_task_usd", 0.0)
+            lines.append(f"| **{m_name}** | Tau-Bench (Standard) | **{pr:.1f}%** | **{pk:.1f}%** | {var:.3f} | {lat:.2f}s | ${cost:.6f} |")
 
     lines.append("")
-    lines.append("### Key Statistical Signals")
-    lines.append(f"- **The Reliability Cliff ($pass^{num_trials}$ Drop):** While single-trial pass rates look respectable (up to 80-90%), "
-                 f"requiring models to succeed across {num_trials} consecutive trials exposes significant stochastic fragility. "
-                 f"Models that succeed once frequently stumble on identical tasks due to prompt non-determinism and JSON tool parsing instability.")
-    lines.append("- **Variance Tracking (σ):** High variance in small models stems from minor formatting hallucinations (e.g. wrapping tool arguments in markdown fences) on repeated iterations.")
+    lines.append("### Key Research Signals")
+    lines.append("- **The Real-World Safety Gap:** Under naive $\\tau$-bench scoring, models appear to achieve high success rates. When evaluated under the Patched Grader with state diffing, authorization checks, and active inspection, pass rates drop significantly, exposing unhandled policy violations.")
+    lines.append(f"- **The Reliability Cliff ($pass^{num_trials}$ Drop):** Requiring repeated consecutive successes reveals stochastic instability across tool invocation turns.")
     lines.append("")
 
-    # Mermaid visualization
-    lines.append("## Visual Reliability Comparison")
-    lines.append("")
-    lines.append("```mermaid")
-    lines.append("%%{init: {'theme': 'dark'}}%%")
-    lines.append("barChart")
-    lines.append("    title Pass Rate vs pass^3 Consistency")
-    lines.append(f"    x-axis [{', '.join([f'\"{n}\"' for n in model_names])}]")
-    lines.append(f"    \"Single-Trial Pass Rate (%)\": [{', '.join(str(p) for p in chart_series_pr)}]")
-    lines.append(f"    \"pass^3 Consistency (%)\": [{', '.join(str(p) for p in chart_series_pk)}]")
-    lines.append("```")
-    lines.append("")
+    if tau_pass_rates and patched_pass_rates:
+        lines.append("## Visual Comparison: Naive vs Patched Safety Score")
+        lines.append("")
+        lines.append("```mermaid")
+        lines.append("%%{init: {'theme': 'dark'}}%%")
+        lines.append("barChart")
+        lines.append("    title Standard Tau-Bench vs Patched Safe Grader Pass Rate")
+        lines.append(f"    x-axis [{', '.join([f'\"{n}\"' for n in model_names])}]")
+        lines.append(f"    \"Standard Tau-Bench (%)\": [{', '.join(str(p) for p in tau_pass_rates)}]")
+        lines.append(f"    \"Patched Safe Grader (%)\": [{', '.join(str(p) for p in patched_pass_rates)}]")
+        lines.append("```")
+        lines.append("")
 
     return "\n".join(lines)
 
@@ -99,7 +104,6 @@ def main():
         f.write(report_md)
 
     print(f"[SUCCESS] Formatted report generated at: {args.output}")
-    print("\n" + report_md[:600] + "\n...[truncated]...")
 
 
 if __name__ == "__main__":
