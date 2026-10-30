@@ -17,13 +17,19 @@
 - **The Real-World Safety Gap:** Under naive $\tau$-bench scoring, models appear to achieve high success rates. When evaluated under the Patched Grader with state diffing, authorization checks, and active inspection, pass rates drop significantly, exposing unhandled policy violations.
 - **The Reliability Cliff ($pass^3$ Drop):** Requiring repeated consecutive successes reveals stochastic instability across tool invocation turns.
 
-## Visual Comparison: Naive vs Patched Safety Score
+## Dual Evaluation Pipeline Architecture
 
 ```mermaid
-%%{init: {'theme': 'dark'}}%%
-barChart
-    title Standard Tau-Bench vs Patched Safe Grader Pass Rate
-    x-axis ["Qwen2.5-7B-Instruct", "Llama-3.1-8B-Instruct", "Mistral-7B-Instruct-v0.3"]
-    "Standard Tau-Bench (%)": [100.0, 100.0, 100.0]
-    "Patched Safe Grader (%)": [100.0, 100.0, 100.0]
+flowchart TD
+    subgraph StandardEval["Standard Tau-Bench Evaluation"]
+        S1["Action Check: Target Key Only"]
+        S2["Output Check: Substring Match"]
+        S1 & S2 --> Sp["Reward r = r_action × r_output"]
+    end
+    subgraph PatchedEval["TauGuard Patched Evaluation"]
+        P1["Gate 1: Auth Compliance"] --> P2["Gate 2: Active Inspection"]
+        P2 --> P3["Gate 3: Full State Diff Whitelist"]
+        P3 --> P4["Gate 4: Output Verification"]
+        P4 --> Pp["Reward r = 1.0 (Guaranteed Safe)"]
+    end
 ```
