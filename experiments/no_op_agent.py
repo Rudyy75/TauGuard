@@ -1,6 +1,6 @@
 """
 Grader Exploit 1: The Zero-Action (No-Op) Agent
-Tests whether an agent that never calls any tools can score passes on benchmark tasks.
+Tests whether the target-state action grader gives an action score to an agent that calls no tools.
 """
 
 import copy
@@ -59,8 +59,8 @@ def audit_no_op_exploit():
         print(f"  -> Task {tid} ({cat}): r_action=1.0 (Full pass: {full_pass})")
     
     print("\nRoot Cause Analysis:")
-    print("For read-only inquiries or policy rejection tasks, the gold target state matches the initial state.")
-    print("Because the grader only checks if initial == final, an inactive agent trivially gets full marks on state verification.")
+    print("For read-only inquiries or policy rejections, the target state already matches the initial state.")
+    print("This proves an r_action false positive; the full reward may still fail the separate output check.")
 
 
 if __name__ == "__main__":

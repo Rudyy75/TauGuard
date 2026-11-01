@@ -1,0 +1,132 @@
+<svg class="rich-terminal" viewBox="0 0 1287 489.2" xmlns="http://www.w3.org/2000/svg">
+    <!-- Generated with Rich https://www.textualize.io -->
+    <style>
+
+    @font-face {
+        font-family: "Fira Code";
+        src: local("FiraCode-Regular"),
+                url("https://cdnjs.cloudflare.com/ajax/libs/firacode/6.2.0/woff2/FiraCode-Regular.woff2") format("woff2"),
+                url("https://cdnjs.cloudflare.com/ajax/libs/firacode/6.2.0/woff/FiraCode-Regular.woff") format("woff");
+        font-style: normal;
+        font-weight: 400;
+    }
+    @font-face {
+        font-family: "Fira Code";
+        src: local("FiraCode-Bold"),
+                url("https://cdnjs.cloudflare.com/ajax/libs/firacode/6.2.0/woff2/FiraCode-Bold.woff2") format("woff2"),
+                url("https://cdnjs.cloudflare.com/ajax/libs/firacode/6.2.0/woff/FiraCode-Bold.woff") format("woff");
+        font-style: bold;
+        font-weight: 700;
+    }
+
+    .terminal-3880425208-matrix {
+        font-family: Fira Code, monospace;
+        font-size: 20px;
+        line-height: 24.4px;
+        font-variant-east-asian: full-width;
+    }
+
+    .terminal-3880425208-title {
+        font-size: 18px;
+        font-weight: bold;
+        font-family: arial;
+    }
+
+    .terminal-3880425208-r1 { fill: #68a0b3 }
+.terminal-3880425208-r2 { fill: #c5c8c6 }
+.terminal-3880425208-r3 { fill: #98a84b;font-weight: bold }
+.terminal-3880425208-r4 { fill: #868887 }
+.terminal-3880425208-r5 { fill: #c5c8c6;font-style: italic; }
+.terminal-3880425208-r6 { fill: #c5c8c6;font-weight: bold }
+.terminal-3880425208-r7 { fill: #608ab1 }
+    </style>
+
+    <defs>
+    <clipPath id="terminal-3880425208-clip-terminal">
+      <rect x="0" y="0" width="1267.8" height="438.2" />
+    </clipPath>
+    <clipPath id="terminal-3880425208-line-0">
+    <rect x="0" y="1.5" width="1268.8" height="24.65"/>
+            </clipPath>
+<clipPath id="terminal-3880425208-line-1">
+    <rect x="0" y="25.9" width="1268.8" height="24.65"/>
+            </clipPath>
+<clipPath id="terminal-3880425208-line-2">
+    <rect x="0" y="50.3" width="1268.8" height="24.65"/>
+            </clipPath>
+<clipPath id="terminal-3880425208-line-3">
+    <rect x="0" y="74.7" width="1268.8" height="24.65"/>
+            </clipPath>
+<clipPath id="terminal-3880425208-line-4">
+    <rect x="0" y="99.1" width="1268.8" height="24.65"/>
+            </clipPath>
+<clipPath id="terminal-3880425208-line-5">
+    <rect x="0" y="123.5" width="1268.8" height="24.65"/>
+            </clipPath>
+<clipPath id="terminal-3880425208-line-6">
+    <rect x="0" y="147.9" width="1268.8" height="24.65"/>
+            </clipPath>
+<clipPath id="terminal-3880425208-line-7">
+    <rect x="0" y="172.3" width="1268.8" height="24.65"/>
+            </clipPath>
+<clipPath id="terminal-3880425208-line-8">
+    <rect x="0" y="196.7" width="1268.8" height="24.65"/>
+            </clipPath>
+<clipPath id="terminal-3880425208-line-9">
+    <rect x="0" y="221.1" width="1268.8" height="24.65"/>
+            </clipPath>
+<clipPath id="terminal-3880425208-line-10">
+    <rect x="0" y="245.5" width="1268.8" height="24.65"/>
+            </clipPath>
+<clipPath id="terminal-3880425208-line-11">
+    <rect x="0" y="269.9" width="1268.8" height="24.65"/>
+            </clipPath>
+<clipPath id="terminal-3880425208-line-12">
+    <rect x="0" y="294.3" width="1268.8" height="24.65"/>
+            </clipPath>
+<clipPath id="terminal-3880425208-line-13">
+    <rect x="0" y="318.7" width="1268.8" height="24.65"/>
+            </clipPath>
+<clipPath id="terminal-3880425208-line-14">
+    <rect x="0" y="343.1" width="1268.8" height="24.65"/>
+            </clipPath>
+<clipPath id="terminal-3880425208-line-15">
+    <rect x="0" y="367.5" width="1268.8" height="24.65"/>
+            </clipPath>
+<clipPath id="terminal-3880425208-line-16">
+    <rect x="0" y="391.9" width="1268.8" height="24.65"/>
+            </clipPath>
+    </defs>
+
+    <rect fill="#292929" stroke="rgba(255,255,255,0.35)" stroke-width="1" x="1" y="1" width="1285" height="487.2" rx="8"/><text class="terminal-3880425208-title" fill="#c5c8c6" text-anchor="middle" x="642" y="27">TauGuard&#160;recorded&#160;local&#160;benchmark&#160;report</text>
+            <g transform="translate(26,22)">
+            <circle cx="0" cy="0" r="7" fill="#ff5f57"/>
+            <circle cx="22" cy="0" r="7" fill="#febc2e"/>
+            <circle cx="44" cy="0" r="7" fill="#28c840"/>
+            </g>
+        
+    <g transform="translate(9, 41)" clip-path="url(#terminal-3880425208-clip-terminal)">
+    
+    <g class="terminal-3880425208-matrix">
+    <text class="terminal-3880425208-r1" x="0" y="20" textLength="1268.8" clip-path="url(#terminal-3880425208-line-0)">┌──────────────────────────────────────────────────────────────────────────────────────────────────────┐</text><text class="terminal-3880425208-r2" x="1268.8" y="20" textLength="12.2" clip-path="url(#terminal-3880425208-line-0)">
+</text><text class="terminal-3880425208-r1" x="0" y="44.4" textLength="12.2" clip-path="url(#terminal-3880425208-line-1)">│</text><text class="terminal-3880425208-r3" x="24.4" y="44.4" textLength="97.6" clip-path="url(#terminal-3880425208-line-1)">TauGuard</text><text class="terminal-3880425208-r2" x="122" y="44.4" textLength="341.6" clip-path="url(#terminal-3880425208-line-1)">&#160;·&#160;Local&#160;CRM&#160;agent&#160;benchmark</text><text class="terminal-3880425208-r1" x="1256.6" y="44.4" textLength="12.2" clip-path="url(#terminal-3880425208-line-1)">│</text><text class="terminal-3880425208-r2" x="1268.8" y="44.4" textLength="12.2" clip-path="url(#terminal-3880425208-line-1)">
+</text><text class="terminal-3880425208-r1" x="0" y="68.8" textLength="1268.8" clip-path="url(#terminal-3880425208-line-2)">└──────────────────────────────────────────────────────────────────────────────────────────────────────┘</text><text class="terminal-3880425208-r2" x="1268.8" y="68.8" textLength="12.2" clip-path="url(#terminal-3880425208-line-2)">
+</text><text class="terminal-3880425208-r4" x="0" y="93.2" textLength="1000.4" clip-path="url(#terminal-3880425208-line-3)">Recorded&#160;artifact:&#160;results\ollama_live_20261101T144653Z.json&#160;|&#160;10&#160;tasks&#160;×&#160;3&#160;trials</text><text class="terminal-3880425208-r2" x="1268.8" y="93.2" textLength="12.2" clip-path="url(#terminal-3880425208-line-3)">
+</text><text class="terminal-3880425208-r2" x="1268.8" y="117.6" textLength="12.2" clip-path="url(#terminal-3880425208-line-4)">
+</text><text class="terminal-3880425208-r5" x="0" y="142" textLength="915" clip-path="url(#terminal-3880425208-line-5)">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;Target-State&#160;vs&#160;Policy-Aware&#160;Grader&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;</text><text class="terminal-3880425208-r2" x="1268.8" y="142" textLength="12.2" clip-path="url(#terminal-3880425208-line-5)">
+</text><text class="terminal-3880425208-r4" x="0" y="166.4" textLength="915" clip-path="url(#terminal-3880425208-line-6)">┌──────────────┬──────────────┬─────────┬────────────────┬────────────────┐</text><text class="terminal-3880425208-r2" x="1268.8" y="166.4" textLength="12.2" clip-path="url(#terminal-3880425208-line-6)">
+</text><text class="terminal-3880425208-r4" x="0" y="190.8" textLength="12.2" clip-path="url(#terminal-3880425208-line-7)">│</text><text class="terminal-3880425208-r6" x="24.4" y="190.8" textLength="146.4" clip-path="url(#terminal-3880425208-line-7)">Model&#160;&#160;&#160;&#160;&#160;&#160;&#160;</text><text class="terminal-3880425208-r4" x="183" y="190.8" textLength="12.2" clip-path="url(#terminal-3880425208-line-7)">│</text><text class="terminal-3880425208-r6" x="207.4" y="190.8" textLength="146.4" clip-path="url(#terminal-3880425208-line-7)">Target-state</text><text class="terminal-3880425208-r4" x="366" y="190.8" textLength="12.2" clip-path="url(#terminal-3880425208-line-7)">│</text><text class="terminal-3880425208-r6" x="390.4" y="190.8" textLength="85.4" clip-path="url(#terminal-3880425208-line-7)">Patched</text><text class="terminal-3880425208-r4" x="488" y="190.8" textLength="12.2" clip-path="url(#terminal-3880425208-line-7)">│</text><text class="terminal-3880425208-r6" x="512.4" y="190.8" textLength="170.8" clip-path="url(#terminal-3880425208-line-7)">Patched&#160;pass-k</text><text class="terminal-3880425208-r4" x="695.4" y="190.8" textLength="12.2" clip-path="url(#terminal-3880425208-line-7)">│</text><text class="terminal-3880425208-r6" x="719.8" y="190.8" textLength="170.8" clip-path="url(#terminal-3880425208-line-7)">Latency&#160;/&#160;task</text><text class="terminal-3880425208-r4" x="902.8" y="190.8" textLength="12.2" clip-path="url(#terminal-3880425208-line-7)">│</text><text class="terminal-3880425208-r2" x="1268.8" y="190.8" textLength="12.2" clip-path="url(#terminal-3880425208-line-7)">
+</text><text class="terminal-3880425208-r4" x="0" y="215.2" textLength="915" clip-path="url(#terminal-3880425208-line-8)">├──────────────┼──────────────┼─────────┼────────────────┼────────────────┤</text><text class="terminal-3880425208-r2" x="1268.8" y="215.2" textLength="12.2" clip-path="url(#terminal-3880425208-line-8)">
+</text><text class="terminal-3880425208-r4" x="0" y="239.6" textLength="12.2" clip-path="url(#terminal-3880425208-line-9)">│</text><text class="terminal-3880425208-r6" x="24.4" y="239.6" textLength="146.4" clip-path="url(#terminal-3880425208-line-9)">Qwen3&#160;8B&#160;&#160;&#160;&#160;</text><text class="terminal-3880425208-r4" x="183" y="239.6" textLength="12.2" clip-path="url(#terminal-3880425208-line-9)">│</text><text class="terminal-3880425208-r2" x="207.4" y="239.6" textLength="146.4" clip-path="url(#terminal-3880425208-line-9)">&#160;&#160;&#160;&#160;&#160;&#160;90.00%</text><text class="terminal-3880425208-r4" x="366" y="239.6" textLength="12.2" clip-path="url(#terminal-3880425208-line-9)">│</text><text class="terminal-3880425208-r2" x="390.4" y="239.6" textLength="85.4" clip-path="url(#terminal-3880425208-line-9)">&#160;43.33%</text><text class="terminal-3880425208-r4" x="488" y="239.6" textLength="12.2" clip-path="url(#terminal-3880425208-line-9)">│</text><text class="terminal-3880425208-r2" x="512.4" y="239.6" textLength="170.8" clip-path="url(#terminal-3880425208-line-9)">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;30.00%</text><text class="terminal-3880425208-r4" x="695.4" y="239.6" textLength="12.2" clip-path="url(#terminal-3880425208-line-9)">│</text><text class="terminal-3880425208-r2" x="719.8" y="239.6" textLength="170.8" clip-path="url(#terminal-3880425208-line-9)">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;62.67s</text><text class="terminal-3880425208-r4" x="902.8" y="239.6" textLength="12.2" clip-path="url(#terminal-3880425208-line-9)">│</text><text class="terminal-3880425208-r2" x="1268.8" y="239.6" textLength="12.2" clip-path="url(#terminal-3880425208-line-9)">
+</text><text class="terminal-3880425208-r4" x="0" y="264" textLength="12.2" clip-path="url(#terminal-3880425208-line-10)">│</text><text class="terminal-3880425208-r6" x="24.4" y="264" textLength="146.4" clip-path="url(#terminal-3880425208-line-10)">Llama&#160;3.1&#160;8B</text><text class="terminal-3880425208-r4" x="183" y="264" textLength="12.2" clip-path="url(#terminal-3880425208-line-10)">│</text><text class="terminal-3880425208-r2" x="207.4" y="264" textLength="146.4" clip-path="url(#terminal-3880425208-line-10)">&#160;&#160;&#160;&#160;&#160;&#160;30.00%</text><text class="terminal-3880425208-r4" x="366" y="264" textLength="12.2" clip-path="url(#terminal-3880425208-line-10)">│</text><text class="terminal-3880425208-r2" x="390.4" y="264" textLength="85.4" clip-path="url(#terminal-3880425208-line-10)">&#160;10.00%</text><text class="terminal-3880425208-r4" x="488" y="264" textLength="12.2" clip-path="url(#terminal-3880425208-line-10)">│</text><text class="terminal-3880425208-r2" x="512.4" y="264" textLength="170.8" clip-path="url(#terminal-3880425208-line-10)">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;10.00%</text><text class="terminal-3880425208-r4" x="695.4" y="264" textLength="12.2" clip-path="url(#terminal-3880425208-line-10)">│</text><text class="terminal-3880425208-r2" x="719.8" y="264" textLength="170.8" clip-path="url(#terminal-3880425208-line-10)">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;10.89s</text><text class="terminal-3880425208-r4" x="902.8" y="264" textLength="12.2" clip-path="url(#terminal-3880425208-line-10)">│</text><text class="terminal-3880425208-r2" x="1268.8" y="264" textLength="12.2" clip-path="url(#terminal-3880425208-line-10)">
+</text><text class="terminal-3880425208-r4" x="0" y="288.4" textLength="12.2" clip-path="url(#terminal-3880425208-line-11)">│</text><text class="terminal-3880425208-r6" x="24.4" y="288.4" textLength="146.4" clip-path="url(#terminal-3880425208-line-11)">Mistral&#160;7B&#160;&#160;</text><text class="terminal-3880425208-r4" x="183" y="288.4" textLength="12.2" clip-path="url(#terminal-3880425208-line-11)">│</text><text class="terminal-3880425208-r2" x="207.4" y="288.4" textLength="146.4" clip-path="url(#terminal-3880425208-line-11)">&#160;&#160;&#160;&#160;&#160;&#160;40.00%</text><text class="terminal-3880425208-r4" x="366" y="288.4" textLength="12.2" clip-path="url(#terminal-3880425208-line-11)">│</text><text class="terminal-3880425208-r2" x="390.4" y="288.4" textLength="85.4" clip-path="url(#terminal-3880425208-line-11)">&#160;20.00%</text><text class="terminal-3880425208-r4" x="488" y="288.4" textLength="12.2" clip-path="url(#terminal-3880425208-line-11)">│</text><text class="terminal-3880425208-r2" x="512.4" y="288.4" textLength="170.8" clip-path="url(#terminal-3880425208-line-11)">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;10.00%</text><text class="terminal-3880425208-r4" x="695.4" y="288.4" textLength="12.2" clip-path="url(#terminal-3880425208-line-11)">│</text><text class="terminal-3880425208-r2" x="719.8" y="288.4" textLength="170.8" clip-path="url(#terminal-3880425208-line-11)">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;7.01s</text><text class="terminal-3880425208-r4" x="902.8" y="288.4" textLength="12.2" clip-path="url(#terminal-3880425208-line-11)">│</text><text class="terminal-3880425208-r2" x="1268.8" y="288.4" textLength="12.2" clip-path="url(#terminal-3880425208-line-11)">
+</text><text class="terminal-3880425208-r4" x="0" y="312.8" textLength="915" clip-path="url(#terminal-3880425208-line-12)">└──────────────┴──────────────┴─────────┴────────────────┴────────────────┘</text><text class="terminal-3880425208-r2" x="1268.8" y="312.8" textLength="12.2" clip-path="url(#terminal-3880425208-line-12)">
+</text><text class="terminal-3880425208-r7" x="0" y="337.2" textLength="24.4" clip-path="url(#terminal-3880425208-line-13)">┌─</text><text class="terminal-3880425208-r7" x="24.4" y="337.2" textLength="488" clip-path="url(#terminal-3880425208-line-13)">────────────────────────────────────────</text><text class="terminal-3880425208-r7" x="512.4" y="337.2" textLength="244" clip-path="url(#terminal-3880425208-line-13)">&#160;What&#160;this&#160;measures&#160;</text><text class="terminal-3880425208-r7" x="756.4" y="337.2" textLength="488" clip-path="url(#terminal-3880425208-line-13)">────────────────────────────────────────</text><text class="terminal-3880425208-r7" x="1244.4" y="337.2" textLength="24.4" clip-path="url(#terminal-3880425208-line-13)">─┐</text><text class="terminal-3880425208-r2" x="1268.8" y="337.2" textLength="12.2" clip-path="url(#terminal-3880425208-line-13)">
+</text><text class="terminal-3880425208-r7" x="0" y="361.6" textLength="12.2" clip-path="url(#terminal-3880425208-line-14)">│</text><text class="terminal-3880425208-r2" x="24.4" y="361.6" textLength="951.6" clip-path="url(#terminal-3880425208-line-14)">The&#160;patched&#160;grader&#160;adds&#160;activity,&#160;authorization/policy,&#160;and&#160;state-diff&#160;checks.</text><text class="terminal-3880425208-r7" x="1256.6" y="361.6" textLength="12.2" clip-path="url(#terminal-3880425208-line-14)">│</text><text class="terminal-3880425208-r2" x="1268.8" y="361.6" textLength="12.2" clip-path="url(#terminal-3880425208-line-14)">
+</text><text class="terminal-3880425208-r7" x="0" y="386" textLength="12.2" clip-path="url(#terminal-3880425208-line-15)">│</text><text class="terminal-3880425208-r2" x="24.4" y="386" textLength="1049.2" clip-path="url(#terminal-3880425208-line-15)">Response&#160;grading&#160;uses&#160;Gemini&#160;only&#160;when&#160;configured;&#160;otherwise&#160;it&#160;uses&#160;keyword&#160;fallback.</text><text class="terminal-3880425208-r7" x="1256.6" y="386" textLength="12.2" clip-path="url(#terminal-3880425208-line-15)">│</text><text class="terminal-3880425208-r2" x="1268.8" y="386" textLength="12.2" clip-path="url(#terminal-3880425208-line-15)">
+</text><text class="terminal-3880425208-r7" x="0" y="410.4" textLength="1268.8" clip-path="url(#terminal-3880425208-line-16)">└──────────────────────────────────────────────────────────────────────────────────────────────────────┘</text><text class="terminal-3880425208-r2" x="1268.8" y="410.4" textLength="12.2" clip-path="url(#terminal-3880425208-line-16)">
+</text><text class="terminal-3880425208-r4" x="0" y="434.8" textLength="1061.4" clip-path="url(#terminal-3880425208-line-17)">Exploratory&#160;results&#160;for&#160;TauGuard&#x27;s&#160;custom&#160;CRM&#160;task&#160;suite.&#160;Not&#160;official&#160;τ-bench&#160;results.</text><text class="terminal-3880425208-r2" x="1268.8" y="434.8" textLength="12.2" clip-path="url(#terminal-3880425208-line-17)">
+</text>
+    </g>
+    </g>
+</svg>

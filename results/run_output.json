@@ -1,5 +1,7 @@
 {
   "metadata": {
+    "run_mode": "legacy_deterministic_mock_unverified",
+    "provenance_status": "historical mock output; not model performance evidence",
     "num_trials": 3,
     "tasks_count": 30,
     "mock_mode": true,

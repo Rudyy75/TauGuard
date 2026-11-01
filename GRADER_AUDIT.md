@@ -1,6 +1,7 @@
 # Grader Stress-Testing Report: Auditing the τ-bench Scoring Mechanism
 
 > **Auditor:** Independent Benchmark Evaluation Project  
+> **Scope:** Audits the custom grader in this repository; it does not establish defects in the official tau-bench implementation. Historical model metrics were not backed by auditable live-run records and must not be presented as verified results.  
 > **Environment:** $\tau$-retail (CRM tasks: cancellations, returns, address changes, inventory)  
 > **Evaluation Metric Under Audit:** $r = r_{\text{action}} \times r_{\text{output}} \in \{0, 1\}$  
 > **Audited Script:** `experiments/run_all_audits.py`

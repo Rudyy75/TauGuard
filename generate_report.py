@@ -11,104 +11,56 @@ if hasattr(sys.stderr, "reconfigure"):
 
 def generate_markdown_report(data: dict) -> str:
     metadata = data.get("metadata", {})
-    num_trials = metadata.get("num_trials", 3)
-    tasks_count = metadata.get("tasks_count", 30)
-    models_dict = data.get("models", {})
-
-    lines = []
-    lines.append("# Benchmark Results: Standard Tau-Bench vs Patched Safe Grader")
-    lines.append("")
-    lines.append(f"> **Configuration:** Evaluated across {tasks_count} tasks, "
-                 f"**{num_trials} independent trials per task** ($pass^{num_trials}$ reliability), "
-                 f"comparing naive $\\tau$-bench scoring against the policy-enforcing Patched Grader.")
-    lines.append("")
-
-    lines.append("## Executive Reliability & Safety Comparison Table")
-    lines.append("")
-    lines.append(f"| Model | Grader Engine | Pass Rate | $pass^{num_trials}$ Reliability | Variance (σ) | Avg Latency | Est. Cost / Task |")
-    lines.append("| :--- | :--- | :---: | :---: | :---: | :---: | :---: |")
-
-    model_names = []
-    tau_pass_rates = []
-    patched_pass_rates = []
-
-    for m_key, m_val in models_dict.items():
-        m_name = m_val.get("info", {}).get("name", m_key)
-        model_names.append(m_name)
-
-        evals = m_val.get("evaluations", {})
-        if evals:
-            for g_key, g_data in evals.items():
-                metrics = g_data.get("metrics", {})
-                g_label = metrics.get("grader_label", g_key)
-                pr = metrics.get("pass_rate_pct", 0.0)
-                pk = metrics.get("pass_k_pct", 0.0)
-                var = metrics.get("mean_variance", 0.0)
-                lat = metrics.get("mean_latency_sec", 0.0)
-                cost = metrics.get("mean_cost_per_task_usd", 0.0)
-
-                if g_key == "tau_bench":
-                    tau_pass_rates.append(pr)
-                elif g_key == "patched":
-                    patched_pass_rates.append(pr)
-
-                lines.append(f"| **{m_name}** | {g_label} | **{pr:.1f}%** | **{pk:.1f}%** | {var:.3f} | {lat:.2f}s | ${cost:.6f} |")
-        else:
-            metrics = m_val.get("metrics", {})
-            pr = metrics.get("pass_rate_pct", 0.0)
-            pk = metrics.get("pass_k_pct", 0.0)
-            var = metrics.get("mean_variance", 0.0)
-            lat = metrics.get("mean_latency_sec", 0.0)
-            cost = metrics.get("mean_cost_per_task_usd", 0.0)
-            lines.append(f"| **{m_name}** | Tau-Bench (Standard) | **{pr:.1f}%** | **{pk:.1f}%** | {var:.3f} | {lat:.2f}s | ${cost:.6f} |")
-
-    lines.append("")
-    lines.append("### Key Research Signals")
-    lines.append("- **The Real-World Safety Gap:** Under naive $\\tau$-bench scoring, models appear to achieve high success rates. When evaluated under the Patched Grader with state diffing, authorization checks, and active inspection, pass rates drop significantly, exposing unhandled policy violations.")
-    lines.append(f"- **The Reliability Cliff ($pass^{num_trials}$ Drop):** Requiring repeated consecutive successes reveals stochastic instability across tool invocation turns.")
-    lines.append("")
-
-    lines.append("## Dual Evaluation Pipeline Architecture")
-    lines.append("")
-    lines.append("```mermaid")
-    lines.append("flowchart TD")
-    lines.append("    subgraph StandardEval[\"Standard Tau-Bench Evaluation\"]")
-    lines.append("        S1[\"Action Check: Target Key Only\"]")
-    lines.append("        S2[\"Output Check: Substring Match\"]")
-    lines.append("        S1 & S2 --> Sp[\"Reward r = r_action × r_output\"]")
-    lines.append("    end")
-    lines.append("    subgraph PatchedEval[\"TauGuard Patched Evaluation\"]")
-    lines.append("        P1[\"Gate 1: Auth Compliance\"] --> P2[\"Gate 2: Active Inspection\"]")
-    lines.append("        P2 --> P3[\"Gate 3: Full State Diff Whitelist\"]")
-    lines.append("        P3 --> P4[\"Gate 4: Output Verification\"]")
-    lines.append("        P4 --> Pp[\"Reward r = 1.0 (Guaranteed Safe)\"]")
-    lines.append("    end")
-    lines.append("```")
-    lines.append("")
-
+    run_mode = metadata.get("run_mode", "unknown / legacy artifact")
+    lines = [
+        "# TauGuard Evaluation Results",
+        "",
+        f"> Run mode: {run_mode} · Tasks: {metadata.get('tasks_count', '?')} · "
+        f"Trials per task: {metadata.get('num_trials', '?')}",
+        "> Custom in-memory CRM benchmark; this is not the official tau-bench environment.",
+        "",
+        "| Model | Grader | Pass rate | pass-k | Variation | Latency | Failed calls | Live evidence |",
+        "| --- | --- | ---: | ---: | ---: | ---: | ---: | :---: |",
+    ]
+    for model_key, model in data.get("models", {}).items():
+        name = model.get("info", {}).get("name", model_key)
+        for grader_key, evaluation in model.get("evaluations", {}).items():
+            metrics = evaluation.get("metrics", {})
+            valid = run_mode == "ollama_live" and metrics.get("valid_for_comparison", False)
+            lines.append(
+                f"| {name} | {metrics.get('grader_label', grader_key)} | "
+                f"{metrics.get('pass_rate_pct', 0):.1f}% | "
+                f"{metrics.get('pass_k_pct', 0):.1f}% | "
+                f"{metrics.get('mean_variance', 0):.3f} | "
+                f"{metrics.get('mean_latency_sec', 0):.2f}s | "
+                f"{metrics.get('failed_model_calls', 0)} | {'yes' if valid else 'no'} |"
+            )
+    lines.extend([
+        "",
+        "Pass-k is the share of tasks that pass on every one of the first k trials. Local inference cost is zero.",
+        "The customer simulator is deterministic. The patched grader uses a keyword heuristic, not semantic judging.",
+        "Treat these as exploratory results on this task suite, not a general model ranking.",
+    ])
+    if run_mode != "ollama_live":
+        lines.insert(3, "> Not a live-model result. Only successful ollama_live runs count as model evidence.")
     return "\n".join(lines)
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Generate Markdown and Mermaid report from benchmark JSON")
-    parser.add_argument("--input", type=str, default="results/run_output.json", help="Path to input benchmark JSON")
-    parser.add_argument("--output", type=str, default="results/benchmark_summary.md", help="Path to output markdown report")
+    parser = argparse.ArgumentParser(description="Generate a concise report from a TauGuard run JSON")
+    parser.add_argument("--input", type=str, required=True, help="Specific run JSON to summarize")
+    parser.add_argument("--output", type=str, required=True, help="Markdown output path")
     args = parser.parse_args()
 
     if not os.path.exists(args.input):
-        print(f"[!] Error: Input file '{args.input}' not found. Run harness.py first.")
+        print(f"[!] Input file not found: {args.input}")
         sys.exit(1)
-
     with open(args.input, "r", encoding="utf-8") as f:
-        data = json.load(f)
-
-    report_md = generate_markdown_report(data)
-
+        report = generate_markdown_report(json.load(f))
     os.makedirs(os.path.dirname(args.output) or ".", exist_ok=True)
-    with open(args.output, "w", encoding="utf-8") as f:
-        f.write(report_md)
-
-    print(f"[SUCCESS] Formatted report generated at: {args.output}")
+    with open(args.output, "x", encoding="utf-8") as f:
+        f.write(report)
+    print(f"[SUCCESS] Report generated at: {args.output}")
 
 
 if __name__ == "__main__":

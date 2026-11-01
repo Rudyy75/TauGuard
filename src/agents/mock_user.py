@@ -1,10 +1,4 @@
 from typing import Any, Dict, List, Optional, Tuple
-import os
-
-try:
-    from openai import OpenAI
-except ImportError:
-    OpenAI = None  # type: ignore
 
 
 class UserSimulator:
@@ -16,23 +10,9 @@ class UserSimulator:
     def __init__(
         self,
         task: Dict[str, Any],
-        model_id: str = "llama-3.3-70b-versatile",
-        base_url: Optional[str] = None,
-        api_key: Optional[str] = None,
     ):
         self.task = task
-        self.model_id = model_id
         self.turn_count = 0
-
-        self.base_url = base_url or os.getenv("GROQ_BASE_URL", "https://api.groq.com/openai/v1")
-        self.api_key = api_key or os.getenv("GROQ_API_KEY", "")
-
-        self.client = None
-        if OpenAI and self.api_key:
-            try:
-                self.client = OpenAI(base_url=self.base_url, api_key=self.api_key)
-            except Exception:
-                self.client = None
 
     def respond(self, last_agent_message: str) -> Tuple[str, bool]:
         """

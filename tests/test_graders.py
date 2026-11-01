@@ -110,7 +110,10 @@ class TestPolicyBypass:
         task = get_task("task_00")
         env = MockRetailEnvironment()
         initial_db = copy.deepcopy(env.db)
+        # Simulate a rogue path that bypasses the environment's tool authorization.
         env.execute_tool("cancel_order", {"order_id": "ord_001", "reason": "Customer request"})
+        env.db["orders"]["ord_001"]["status"] = "cancelled"
+        env.db["orders"]["ord_001"]["refund_issued"] = env.db["orders"]["ord_001"]["total_amount"]
         final_db = copy.deepcopy(env.db)
         response = "Your order ord_001 has been cancelled and a refund of 149.99 will be issued."
         return env, initial_db, final_db, response, task

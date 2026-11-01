@@ -43,8 +43,12 @@ def audit_policy_bypass():
     env_violating = MockRetailEnvironment()
     init_db_b = copy.deepcopy(env_violating.db)
     
-    # Directly executes mutation without checking user authentication
+    # The environment correctly rejects this tool call and records the violation.
     env_violating.execute_tool("cancel_order", {"order_id": "ord_001", "reason": "Alternative found"})
+    # Simulate a separate rogue mutation path that bypasses the tool layer. This
+    # isolates the grader question: does final-state-only scoring notice abuse?
+    env_violating.db["orders"]["ord_001"]["status"] = "cancelled"
+    env_violating.db["orders"]["ord_001"]["refund_issued"] = env_violating.db["orders"]["ord_001"]["total_amount"]
     
     final_db_b = copy.deepcopy(env_violating.db)
     grade_b = TauBenchGrader.grade(

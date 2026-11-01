@@ -124,19 +124,26 @@ class OpenAIToolAgent(BaseAgent):
             }
 
         # Extract order ID and user identity
-        oid_match = re.search(r"ord_\d+", last_msg, re.IGNORECASE)
+        user_text = " ".join(
+            (m.get("content") or "") for m in messages if m.get("role") == "user"
+        )
+        oid_match = re.search(r"ord_\d+", user_text, re.IGNORECASE)
         oid = oid_match.group(0).lower() if oid_match else "ord_001"
-        msg_lower = last_msg.lower()
+        msg_lower = user_text.lower()
 
-        # Find customer email or name from system prompt or context
-        system_content = ""
-        for m in messages:
-            if m.get("role") == "system":
-                system_content = (m.get("content") or "").lower()
-                break
+        # Identity must come from the customer's conversation, never hidden task metadata.
+        email_match = re.search(r"[\w\.-]+@[\w\.-]+\.\w+", user_text)
+        user_query = email_match.group(0) if email_match else None
+        system_content = " ".join(
+            (m.get("content") or "") for m in messages if m.get("role") == "system"
+        ).lower()
 
-        email_match = re.search(r"[\w\.-]+@[\w\.-]+\.\w+", system_content)
-        user_query = email_match.group(0) if email_match else "sarah.connor@cyberdyne.org"
+        if any(word in msg_lower for word in ("cancel", "address", "return")) and not user_query:
+            return {
+                "content": "I can help with that. What email address is associated with your account so I can verify your identity?",
+                "tool_calls": None,
+                "usage": self._usage(100, 25)
+            }
 
         # 1. Shipped cancellation rejection (inspect first)
         if "cancel" in msg_lower and ("category: policy_rejection_shipped" in system_content or oid == "ord_003"):
@@ -159,7 +166,10 @@ class OpenAIToolAgent(BaseAgent):
 
         # 3. Address update (verify identity + update address)
         if "address" in msg_lower:
-            addr_match = re.search(r"to\s+(.+)", last_msg, re.IGNORECASE)
+            initial_user_goal = next(
+                ((m.get("content") or "") for m in messages if m.get("role") == "user"), ""
+            )
+            addr_match = re.search(r"to\s+(.+)", initial_user_goal, re.IGNORECASE)
             target_addr = addr_match.group(1).strip().rstrip(".") if addr_match else "900 Commonwealth Ave, Boston, MA 02215"
             return {
                 "content": None,
@@ -209,7 +219,12 @@ class OpenAIToolAgent(BaseAgent):
         tools_schema: Optional[List[Dict[str, Any]]] = None
     ) -> Dict[str, Any]:
         if self.mock_fallback or not self.client:
-            return self._fallback_simulate(messages, tools_schema)
+            if self.mock_fallback:
+                return self._fallback_simulate(messages, tools_schema)
+            raise RuntimeError(
+                "Live Ollama client is unavailable. Check the OpenAI package and Ollama server; "
+                "live runs never fall back to the mock agent."
+            )
 
         try:
             kwargs: Dict[str, Any] = {
@@ -248,5 +263,4 @@ class OpenAIToolAgent(BaseAgent):
             return {"content": message.content, "tool_calls": tool_calls, "usage": usage}
 
         except Exception as e:
-            print(f"[OpenAIToolAgent] API call failed: {e}. Falling back to simulation.")
-            return self._fallback_simulate(messages, tools_schema)
+            raise RuntimeError(f"Live model request failed for {self.model_id}: {e}") from e

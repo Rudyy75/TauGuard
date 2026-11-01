@@ -1,0 +1,112 @@
+{
+  "created_at_utc": "2026-11-01T18:31:55.998938+00:00",
+  "model": "gemini-3.5-flash-lite",
+  "judge_used": "keyword_fallback",
+  "note": "A keyword_fallback result is not evidence of semantic judging.",
+  "results": [
+    {
+      "case": "Exact keyword wording",
+      "response": "Order ord_001 has been cancelled and a refund of $149.99 will be issued.",
+      "baseline_score": 1.0,
+      "baseline_diagnostics": {
+        "status": "output_matched",
+        "matched": [
+          "cancelled",
+          "149.99",
+          "refund"
+        ],
+        "missing": []
+      },
+      "patched_score": 1.0,
+      "patched_diagnostics": {
+        "status": "output_matched",
+        "judge": "keyword_fallback",
+        "fallback_reason": "URLError: <urlopen error [Errno 11001] getaddrinfo failed>",
+        "matched": [
+          "cancelled",
+          "149.99",
+          "refund"
+        ],
+        "missing": []
+      }
+    },
+    {
+      "case": "Faithful paraphrase",
+      "response": "I stopped order ord_001. We will return 149 dollars and 99 cents to your original payment method.",
+      "baseline_score": 0.0,
+      "baseline_diagnostics": {
+        "status": "missing_required_communication",
+        "missing": [
+          "cancelled",
+          "149.99",
+          "refund"
+        ]
+      },
+      "patched_score": 0.0,
+      "patched_diagnostics": {
+        "status": "missing_keywords",
+        "judge": "keyword_fallback",
+        "fallback_reason": "URLError: <urlopen error [Errno 11001] getaddrinfo failed>",
+        "matched": [],
+        "missing": [
+          "cancelled",
+          "149.99",
+          "refund"
+        ]
+      }
+    },
+    {
+      "case": "Rounded amount (should fail)",
+      "response": "I stopped order ord_001 and confirmed a $150 credit to your original payment method.",
+      "baseline_score": 0.0,
+      "baseline_diagnostics": {
+        "status": "missing_required_communication",
+        "missing": [
+          "cancelled",
+          "149.99",
+          "refund"
+        ]
+      },
+      "patched_score": 0.0,
+      "patched_diagnostics": {
+        "status": "missing_keywords",
+        "judge": "keyword_fallback",
+        "fallback_reason": "URLError: <urlopen error [Errno 11001] getaddrinfo failed>",
+        "matched": [],
+        "missing": [
+          "cancelled",
+          "149.99",
+          "refund"
+        ]
+      }
+    },
+    {
+      "case": "Wrong order identifier (should fail)",
+      "response": "I stopped order ord_002 and will refund exactly $149.99.",
+      "baseline_score": 1.0,
+      "baseline_diagnostics": {
+        "status": "output_matched",
+        "matched": [
+          "149.99",
+          "refund"
+        ],
+        "missing": [
+          "cancelled"
+        ]
+      },
+      "patched_score": 0.0,
+      "patched_diagnostics": {
+        "status": "missing_keywords",
+        "judge": "keyword_fallback",
+        "fallback_reason": "URLError: <urlopen error [Errno 11001] getaddrinfo failed>",
+        "matched": [
+          "149.99",
+          "refund"
+        ],
+        "missing": [
+          "cancelled"
+        ]
+      }
+    }
+  ]
+}

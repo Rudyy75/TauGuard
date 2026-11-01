@@ -3,7 +3,6 @@ Statistical Metrics for Agent Evaluation Harness
 Calculates pass rate, pass^k reliability, variance across trials, latency, token consumption, and cost.
 """
 
-import math
 import statistics
 from typing import Any, Dict, List
 
@@ -40,7 +39,8 @@ def calculate_cost(
 def aggregate_model_metrics(
     task_results: List[Dict[str, Any]],
     k_trials: int = 3,
-    cost_config: Dict[str, float] = None
+    cost_config: Dict[str, float] = None,
+    grader_key: str = "tau_bench",
 ) -> Dict[str, Any]:
     """
     Aggregates trial results across all tasks for a specific model.
@@ -65,7 +65,10 @@ def aggregate_model_metrics(
 
     for item in task_results:
         trials = item.get("trials", [])
-        passes = [1 if t.get("passed", False) else 0 for t in trials]
+        passes = [
+            1 if t.get("grader_results", {}).get(grader_key, t).get("passed", False) else 0
+            for t in trials
+        ]
         all_trial_passes.extend(passes)
 
         # Per-task pass rate
@@ -113,5 +116,8 @@ def aggregate_model_metrics(
         "mean_variance": round(mean_variance, 4),
         "mean_latency_sec": round(mean_latency, 2),
         "mean_tokens_per_task": round(mean_tokens, 1),
-        "mean_cost_per_task_usd": round(mean_cost_per_task, 6)
+        "mean_cost_per_task_usd": round(mean_cost_per_task, 6),
+        "failed_model_calls": sum(
+            1 for item in task_results for t in item.get("trials", []) if t.get("error")
+        ),
     }

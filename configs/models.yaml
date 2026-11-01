@@ -1,47 +1,28 @@
-# Model configurations for Agent Evaluation Harness
-# Evaluated on RTX 4060 Laptop (8GB VRAM) via GGUF (Q4_K_M) or Free Cloud APIs
+# Local Ollama models used for live benchmark runs.
 
 models:
-  qwen2.5-7b:
-    name: "Qwen2.5-7B-Instruct"
+  qwen3-8b:
+    name: "Qwen3 8B"
     provider: "local"
-    model_id: "qwen2.5:7b-instruct-q4_K_M"
-    vllm_id: "unsloth/Qwen2.5-7B-Instruct-GGUF:Q4_K_M"
-    groq_id: "qwen-2.5-coder-32b"
+    model_id: "qwen3:8b"
     context_window: 4096
     temperature: 0.0
-    cost_per_million_input: 0.15   # Theoretical production pricing ($/M tokens)
-    cost_per_million_output: 0.60
-    description: "Best-in-class small open-weights model for structured tool calling & JSON formatting"
+    description: "Local Ollama Qwen3 8B tool-use model"
 
   llama-3.1-8b:
-    name: "Llama-3.1-8B-Instruct"
+    name: "Llama 3.1 8B"
     provider: "local"
-    model_id: "llama3.1:8b-instruct-q4_K_M"
-    vllm_id: "unsloth/Meta-Llama-3.1-8B-Instruct-GGUF:Q4_K_M"
-    groq_id: "llama-3.1-8b-instant"
+    model_id: "llama3.1:8b"
     context_window: 4096
     temperature: 0.0
-    cost_per_million_input: 0.10
-    cost_per_million_output: 0.40
-    description: "Meta's standard 8B parameter instruction-tuned model"
+    description: "Local Ollama Llama 3.1 8B tool-use model"
 
   mistral-7b:
-    name: "Mistral-7B-Instruct-v0.3"
+    name: "Mistral 7B"
     provider: "local"
-    model_id: "mistral:7b-instruct-v0.3-q4_K_M"
-    vllm_id: "mistralai/Mistral-7B-Instruct-v0.3"
-    groq_id: "mixtral-8x7b-32768"
+    model_id: "mistral:7b"
     context_window: 4096
     temperature: 0.0
-    cost_per_million_input: 0.20
-    cost_per_million_output: 0.60
-    description: "Mistral v0.3 release with native function calling and tool support"
+    description: "Local Ollama Mistral 7B tool-use model"
 
-user_simulator:
-  name: "Customer-Simulator-70B"
-  provider: "groq"
-  model_id: "llama-3.3-70b-versatile"
-  temperature: 0.5
-  max_turns: 12
-  description: "Strong customer simulation model to emulate dynamic human interactions"
+# The customer simulator is deterministic and rule-based; no user model is called.

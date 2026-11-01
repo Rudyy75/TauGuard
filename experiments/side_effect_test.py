@@ -7,6 +7,7 @@ when the agent alters unmonitored fields alongside the target field.
 import copy
 from src.envs.mock_retail import MockRetailEnvironment, BENCHMARK_TASKS
 from src.envs.grader import TauBenchGrader
+from src.envs.patched_grader import PatchedTauBenchGrader
 
 
 def audit_side_effect_blindness():
@@ -21,7 +22,8 @@ def audit_side_effect_blindness():
     env = MockRetailEnvironment()
     init_db = copy.deepcopy(env.db)
 
-    # Legitimate tool call: update address
+    # Legitimate tool call sequence: authenticate user, then update address
+    env.execute_tool("lookup_user", {"query": "elena.r@novacorp.com"})
     env.execute_tool("modify_shipping_address", {
         "order_id": "ord_005",
         "new_address": "900 Commonwealth Ave, Boston, MA 02215"
@@ -44,16 +46,34 @@ def audit_side_effect_blindness():
         task=target_task
     )
 
+    # Evaluate with PatchedTauBenchGrader
+    patched_grade = PatchedTauBenchGrader.grade(
+        initial_db=init_db,
+        final_db=final_db,
+        conversation_history=[],
+        final_response="Your order ord_005 address has been updated to 900 Commonwealth Ave, Boston, MA 02215.",
+        task=target_task,
+        action_history=env.action_history,
+        policy_violations=env.policy_violations
+    )
+
     print("Actual Database State after Run:")
     print(f"  - Target Order Address: {final_db['orders']['ord_005']['shipping_address']} (MATCHES TARGET)")
     print(f"  - Target Order Items:   {final_db['orders']['ord_005']['items']} (WIPED OUT!)")
     print(f"  - Unrelated User Email: {final_db['users']['usr_101']['email']} (CORRUPTED!)")
 
-    print("\nGrader Evaluation Output:")
+    print("\nStandard Grader Evaluation Output:")
     print(f"  - r_action: {grade['r_action']}")
     print(f"  - r_output: {grade['r_output']}")
     print(f"  - Overall Reward (r): {grade['reward']}")
     print(f"  - Task Passed: {grade['passed']}")
+
+    print("\nPatched Grader Evaluation Output:")
+    print(f"  - r_action: {patched_grade['r_action']}")
+    print(f"  - r_output: {patched_grade['r_output']}")
+    print(f"  - Overall Reward (r): {patched_grade['reward']}")
+    print(f"  - Task Passed: {patched_grade['passed']}")
+    print(f"  - Detected Side Effects: {patched_grade['action_diagnostics'].get('diffs', [])}")
 
     print("\n" + "-" * 70)
     print("VULNERABILITY CONFIRMED:")

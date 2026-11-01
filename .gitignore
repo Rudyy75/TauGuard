@@ -24,7 +24,8 @@ wheels/
 *.egg-info/
 .installed.cfg
 *.egg
-docs/
+docs/*
+!docs/demo.svg
 
 # Virtual environments
 venv/

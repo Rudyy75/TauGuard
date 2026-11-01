@@ -1,5 +1,6 @@
 {
   "metadata": {
+    "provenance_status": "unverified historical aggregates; excluded from current evaluations",
     "num_trials": 3,
     "tasks_count": 30,
     "environment": "tau-retail (CRM tasks: cancellations, returns, address changes, inventory queries)",

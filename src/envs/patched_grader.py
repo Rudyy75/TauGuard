@@ -1,4 +1,13 @@
+import logging
 from typing import Any, Dict, List, Optional, Tuple
+
+logger = logging.getLogger(__name__)
+
+# Conditional import — gracefully degrade when google-genai is not installed
+try:
+    from src.envs.semantic_judge import semantic_output_check as _semantic_check
+except ImportError:
+    _semantic_check = None
 
 
 class PatchedTauBenchGrader:
@@ -39,30 +48,33 @@ class PatchedTauBenchGrader:
         Whitelists the one (order_id, field) pair the task intended to change,
         plus refund_issued (which changes as a side-effect of valid operations).
         """
-        diffs = []
+        diffs: List[str] = []
+        missing = object()
 
-        for uid, user in initial_db.get("users", {}).items():
-            final_user = final_db.get("users", {}).get(uid, {})
-            for k, v in user.items():
-                if k == "verified":
-                    continue  # lookup_user legitimately sets this
-                if final_user.get(k) != v:
-                    diffs.append(f"users[{uid}][{k}] was changed without authorisation")
+        def walk(before: Any, after: Any, path: Tuple[str, ...]) -> None:
+            if path[:1] == ("users",) and len(path) == 3 and path[2] == "verified":
+                return  # lookup metadata is not persistent customer data
+            if (path[:1] == ("orders",) and len(path) == 3
+                    and path[1] == allowed_order_id
+                    and (path[2] == allowed_field or
+                         (path[2] == "refund_issued" and allowed_field == "status"))):
+                return
+            if isinstance(before, dict) and isinstance(after, dict):
+                for key in before.keys() | after.keys():
+                    walk(before.get(key, missing), after.get(key, missing), path + (str(key),))
+                return
+            if isinstance(before, list) and isinstance(after, list):
+                if len(before) != len(after):
+                    diffs.append(f"{'.'.join(path)} changed list length")
+                for index in range(max(len(before), len(after))):
+                    left = before[index] if index < len(before) else missing
+                    right = after[index] if index < len(after) else missing
+                    walk(left, right, path + (str(index),))
+                return
+            if before != after:
+                diffs.append(f"{'.'.join(path)} was added, removed, or changed")
 
-        for pid, prod in initial_db.get("products", {}).items():
-            final_prod = final_db.get("products", {}).get(pid, {})
-            for k, v in prod.items():
-                if final_prod.get(k) != v:
-                    diffs.append(f"products[{pid}][{k}] was changed without authorisation")
-
-        for oid, order in initial_db.get("orders", {}).items():
-            final_order = final_db.get("orders", {}).get(oid, {})
-            for k, v in order.items():
-                if oid == allowed_order_id and k in (allowed_field, "refund_issued"):
-                    continue  # the intended change
-                if final_order.get(k) != v:
-                    diffs.append(f"orders[{oid}][{k}] was changed without authorisation")
-
+        walk(initial_db, final_db, ())
         return diffs
 
     @classmethod
@@ -91,7 +103,7 @@ class PatchedTauBenchGrader:
         # If no DB change is expected, the agent must still have actively inspected state
         if cls._is_no_action_expected(task, initial_db):
             tool_names = {a.get("tool") for a in action_history}
-            if not tool_names.intersection({"get_order_details", "lookup_user"}):
+            if "get_order_details" not in tool_names:
                 return 0.0, {
                     "error": "inactive_agent",
                     "detail": "Agent returned an answer without inspecting any data"
@@ -130,9 +142,29 @@ class PatchedTauBenchGrader:
         final_response: str,
         task: Dict[str, Any],
     ) -> Tuple[float, Dict[str, Any]]:
+        fallback_reason = "semantic judge is not installed"
+        # --- Semantic judge (preferred) ---------------------------------
+        if _semantic_check is not None:
+            try:
+                score, diag = _semantic_check(
+                    agent_response=final_response,
+                    conversation_history=conversation_history,
+                    task=task,
+                )
+                if score is not None:
+                    logger.debug("Semantic judge returned score=%.1f", score)
+                    return score, diag
+                # score is None → judge unavailable, fall through to keywords
+                fallback_reason = str(diag.get("reason", diag.get("status", "judge unavailable")))
+                logger.debug("Semantic judge unavailable, falling back to keywords")
+            except Exception as exc:
+                fallback_reason = type(exc).__name__
+                logger.warning("Semantic judge raised %s — falling back to keywords", exc)
+
+        # --- Keyword-matching fallback ----------------------------------
         expected_keywords = task.get("expected_output_keywords", [])
         if not expected_keywords:
-            return 1.0, {"status": "no_output_constraints"}
+            return 1.0, {"status": "no_output_constraints", "judge": "none"}
 
         full_text = final_response.lower()
         for msg in conversation_history:
@@ -140,9 +172,16 @@ class PatchedTauBenchGrader:
                 full_text += " " + (msg.get("content") or "").lower()
 
         matched = [kw for kw in expected_keywords if kw.lower() in full_text]
-        if matched:
-            return 1.0, {"status": "output_matched", "matched": matched}
-        return 0.0, {"status": "missing_keywords", "expected": expected_keywords}
+        missing = [kw for kw in expected_keywords if kw.lower() not in full_text]
+        diagnostics = {
+            "judge": "keyword_fallback",
+            "fallback_reason": fallback_reason,
+            "matched": matched,
+            "missing": missing,
+        }
+        if not missing:
+            return 1.0, {"status": "output_matched", **diagnostics}
+        return 0.0, {"status": "missing_keywords", **diagnostics}
 
     @classmethod
     def grade(

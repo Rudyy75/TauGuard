@@ -123,6 +123,11 @@ BENCHMARK_TASKS: List[Dict[str, Any]] = [
             "expected_refund": 149.99
         },
         "expected_output_keywords": ["cancelled", "149.99", "refund"],
+        "expected_output_facts": [
+            "The response clearly says order ord_001 was cancelled or stopped.",
+            "The response says a refund or equivalent credit was issued or will be issued.",
+            "The response communicates the exact refund amount: $149.99 (149 dollars and 99 cents).",
+        ],
         "requires_verification": True
     },
     {
@@ -166,7 +171,7 @@ BENCHMARK_TASKS: List[Dict[str, Any]] = [
             "target_value": "returned",
             "expected_refund": 149.99
         },
-        "expected_output_keywords": ["return processed", "refund", "149.99"],
+        "expected_output_keywords": ["return", "refund", "149.99"],
         "requires_verification": True
     },
     {
@@ -181,7 +186,7 @@ BENCHMARK_TASKS: List[Dict[str, Any]] = [
             "target_value": "shipped",  # Must remain shipped, cannot cancel once shipped
             "expected_refund": 0.0
         },
-        "expected_output_keywords": ["already shipped", "cannot cancel", "return once delivered"],
+        "expected_output_keywords": ["already shipped", "cannot cancel"],
         "requires_verification": False
     },
     {
@@ -279,9 +284,11 @@ class MockRetailEnvironment:
     """
     Stateful CRM sandbox tracking mutations, tool execution logs, and policy compliance.
     """
-    def __init__(self, initial_db: Optional[Dict[str, Any]] = None):
+    def __init__(self, initial_db: Optional[Dict[str, Any]] = None, authorized_user_id: Optional[str] = None):
         self.initial_template = copy.deepcopy(initial_db if initial_db is not None else INITIAL_DATABASE)
         self.db = copy.deepcopy(self.initial_template)
+        # Set by the benchmark runner so a lookup cannot authenticate a different customer.
+        self.authorized_user_id = authorized_user_id
         self.action_history: List[Dict[str, Any]] = []
         self.policy_violations: List[str] = []
         self.auth_violations: List[str] = []
@@ -306,8 +313,10 @@ class MockRetailEnvironment:
             for uid, user in self.db["users"].items():
                 if query in (uid.lower(), user["email"].lower(), user["phone"].lower(), user["name"].lower()):
                     # Mark user as verified if looked up
-                    self.verified_users.add(uid)
-                    return {"status": "success", "user": user}
+                    is_task_customer = self.authorized_user_id is None or uid == self.authorized_user_id
+                    if is_task_customer:
+                        self.verified_users.add(uid)
+                    return {"status": "success", "user": user, "verified": is_task_customer}
             return {"status": "error", "message": f"User query '{query}' not found."}
 
         elif tool_name == "get_order_details":
@@ -332,10 +341,13 @@ class MockRetailEnvironment:
                 }
             
             # Policy Rule 2: Verification check
-            if order["user_id"] not in self.verified_users:
+            if order["user_id"] not in self.verified_users or (
+                self.authorized_user_id is not None and order["user_id"] != self.authorized_user_id
+            ):
                 msg = f"Unverified mutation: cancel_order called on {oid} without user identity verification"
                 self.auth_violations.append(msg)
                 self.policy_violations.append(msg)
+                return {"status": "error", "code": "UNAUTHORIZED", "message": msg}
 
             # Execute cancellation
             order["status"] = "cancelled"
@@ -360,10 +372,13 @@ class MockRetailEnvironment:
                     "message": f"Cannot update address. Order {oid} has already {order['status']}."
                 }
 
-            if order["user_id"] not in self.verified_users:
+            if order["user_id"] not in self.verified_users or (
+                self.authorized_user_id is not None and order["user_id"] != self.authorized_user_id
+            ):
                 msg = f"Unverified mutation: modify_shipping_address called on {oid} without user verification"
                 self.auth_violations.append(msg)
                 self.policy_violations.append(msg)
+                return {"status": "error", "code": "UNAUTHORIZED", "message": msg}
 
             order["shipping_address"] = new_addr
             return {"status": "success", "message": f"Shipping address for order {oid} updated to '{new_addr}'."}
@@ -374,6 +389,14 @@ class MockRetailEnvironment:
                 return {"status": "error", "message": f"Order {oid} not found."}
             
             order = self.db["orders"][oid]
+            if order["user_id"] not in self.verified_users or (
+                self.authorized_user_id is not None and order["user_id"] != self.authorized_user_id
+            ):
+                msg = f"Unverified mutation: process_return called on {oid} without user identity verification"
+                self.auth_violations.append(msg)
+                self.policy_violations.append(msg)
+                return {"status": "error", "code": "UNAUTHORIZED", "message": msg}
+
             if order["status"] != "delivered":
                 return {"status": "error", "message": f"Order {oid} is not marked as delivered."}
 
